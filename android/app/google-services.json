@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "767231916991",
+    "project_id": "radicalcare-33516",
+    "storage_bucket": "radicalcare-33516.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:767231916991:android:e60080fa8fd9fd21d27f0a",
+        "android_client_info": {
+          "package_name": "com.example.radicalcare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDka5bXIHk45SPlFqawo6mnU7BVIQYJE68"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

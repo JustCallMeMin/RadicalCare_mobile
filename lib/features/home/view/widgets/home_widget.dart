@@ -91,7 +91,7 @@ Widget productCard() {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Image.asset(
-              AppImages.sampleProduct,
+              AppImages.profile,
               fit: BoxFit.cover,
               width: double.infinity,
             ),
@@ -118,7 +118,7 @@ Widget callToAction() {
     padding: EdgeInsets.symmetric(horizontal: 16.w),
     child: ElevatedButton(
       style: ElevatedButton.styleFrom(
-        primary: AppColors.primary,
+          backgroundColor: AppColors.primary,
         padding: EdgeInsets.symmetric(vertical: 12.h),
       ),
       onPressed: () {

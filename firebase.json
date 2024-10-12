@@ -1,0 +1,25 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "radicalcare-33516",
+          "appId": "1:767231916991:android:e60080fa8fd9fd21d27f0a",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "radicalcare-33516",
+          "configurations": {
+            "android": "1:767231916991:android:e60080fa8fd9fd21d27f0a",
+            "ios": "1:767231916991:ios:61af53804222952dd27f0a",
+            "macos": "1:767231916991:ios:61af53804222952dd27f0a",
+            "web": "1:767231916991:web:6962b6ac1449ca3ad27f0a",
+            "windows": "1:767231916991:web:7c69de5b8d236866d27f0a"
+          }
+        }
+      }
+    }
+  }
+}

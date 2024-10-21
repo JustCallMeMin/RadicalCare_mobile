@@ -15,6 +15,36 @@ Widget text24Normal({String text = "", Color color = AppColors.secondary}) {
     ),
   );
 }
+Widget text22Normal({String text = "", Color color = AppColors.secondary}) {
+  return Text(
+    text,
+    textAlign: TextAlign.center,
+    style: GoogleFonts.roboto(
+      textStyle:
+      TextStyle(color: color, fontSize: 22.sp, fontWeight: FontWeight.normal),
+    ),
+  );
+}
+Widget text22Bold({String text = "", Color color = AppColors.secondary}) {
+  return Text(
+    text,
+    textAlign: TextAlign.center,
+    style: GoogleFonts.roboto(
+      textStyle:
+      TextStyle(color: color, fontSize: 22.sp, fontWeight: FontWeight.bold),
+    ),
+  );
+}
+Widget text28Normal({String text = "", Color color = AppColors.content}) {
+  return Text(
+    text,
+    textAlign: TextAlign.center,
+    style: GoogleFonts.roboto(
+      textStyle:
+      TextStyle(color: color, fontSize: 28.sp, fontWeight: FontWeight.normal),
+    ),
+  );
+}
 
 Widget text16Normal({String text = "", Color color = AppColors.content}) {
   return Text(
@@ -40,7 +70,32 @@ Widget text14Normal(
     ),
   );
 }
-
+Widget text18Normal(
+    {String text = "",
+      Color color = AppColors.content,
+      TextAlign textAlign = TextAlign.center}) {
+  return Text(
+    text,
+    textAlign: textAlign,
+    style: GoogleFonts.roboto(
+      textStyle:
+      TextStyle(color: color, fontSize: 18.sp, fontWeight: FontWeight.normal),
+    ),
+  );
+}
+Widget text18Bold(
+    {String text = "",
+      Color color = AppColors.content,
+      TextAlign textAlign = TextAlign.center}) {
+  return Text(
+    text,
+    textAlign: textAlign,
+    style: GoogleFonts.roboto(
+      textStyle:
+      TextStyle(color: color, fontSize: 18.sp, fontWeight: FontWeight.bold),
+    ),
+  );
+}
 Widget text12Normal(
     {String text = "",
       Color color = Colors.red,

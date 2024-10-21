@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:radicalcare/common/utils/colors.dart';
+import 'package:radicalcare/features/welcome/provider/welcome_notifier.dart';
 import 'package:radicalcare/features/welcome/widgets/welcome_widgets.dart';
 
 import '../../common/utils/images.dart';
-import 'notifier/welcome_notifier.dart';
 
 class Welcome extends ConsumerWidget {
   Welcome({Key? key}) : super(key: key);

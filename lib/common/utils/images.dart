@@ -15,5 +15,11 @@ class AppImages {
   static const String search = "assets/images/Search.png";
   static const String profile = "assets/images/User.png";
   static const String home = "assets/images/Home.png";
+  static const String service1 = "assets/images/Service1.png";
+  static const String service2 = "assets/images/Service2.png";
+  static const String service3 = "assets/images/Service3.png";
+  static const String homeBanner = "assets/images/Customer_Service_Banner.png";
+  static const String teamWhoWeAre = "assets/images/WhoWeAre_Banner.png";
+
 
 }

@@ -1,109 +1,147 @@
+import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:radicalcare/common/utils/colors.dart';
-import 'package:radicalcare/common/widgets/text_widgets.dart';
 import 'package:radicalcare/common/utils/images.dart';
 
-// Tiêu đề của trang
-Widget homepageTitle({required String text}) {
-  return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 16.w),
-    child: text32Bold(text: text, color: AppColors.secondary),
-  );
-}
+import '../../../../common/utils/colors.dart';
+import '../../../../common/widgets/button_widgets.dart';
+import '../../../../common/widgets/text_widgets.dart';
+import '../../provider/home_notifier.dart';
 
-// Thanh tìm kiếm
-Widget searchBar() {
-  return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 16.w),
-    child: TextField(
-      decoration: InputDecoration(
-        hintText: "Search for clothes...",
-        prefixIcon: Icon(Icons.search, color: AppColors.secondary),
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide.none,
-        ),
-      ),
-    ),
-  );
-}
-
-// Danh mục sản phẩm
-Widget categorySelector() {
-  List<String> categories = ["All", "Tshirts", "Jeans", "Shoes"];
-  return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 16.w),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: categories
-          .map((category) => ChoiceChip(
-        label: Text(category),
-        selected: category == "Tshirts", // Chọn mặc định
-        onSelected: (bool selected) {},
-      ))
-          .toList(),
-    ),
-  );
-}
-
-// Lưới sản phẩm
-Widget productGrid() {
-  return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 16.w),
-    child: GridView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.75,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
-      ),
-      itemCount: 4, // Số lượng sản phẩm
-      itemBuilder: (context, index) {
-        return productCard();
-      },
-    ),
-  );
-}
-
-// Thẻ sản phẩm
-Widget productCard() {
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(8),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.grey.withOpacity(0.2),
-          blurRadius: 5,
-          spreadRadius: 2,
-        ),
-      ],
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+Widget headerSection({String imagePath = ""}) {
+  return ClipPath(
+    clipper: BottomCurveClipper(),
+    child: Stack(
       children: [
-        Expanded(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              AppImages.profile,
+        // Ảnh nền của header
+        Container(
+          height: 300.h,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(imagePath),
               fit: BoxFit.cover,
-              width: double.infinity,
+            ),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5),
+            ),
+            child: Padding(
+              padding: EdgeInsets.only(left: 25.w, right: 25.w, top: 40.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      text28Normal(
+                          text: "Nguyễn Văn Tèo Em", color: Colors.white),
+                      Icon(
+                        Icons.menu,
+                        color: Colors.white,
+                        size: 24.sp,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10.h),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on,
+                        color: Colors.white,
+                        size: 18.sp,
+                      ),
+                      SizedBox(width: 5.w),
+                      text16Normal(text: "1234 Lò Lu", color: Colors.white),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-        Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        // Thêm search bar ở dưới cùng
+        Positioned(
+          bottom: 100.h, // Điều chỉnh vị trí của search bar
+          left: 25.w,
+          right: 25.w,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 15.w),
+            height: 50.h,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(25),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 6,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.search, color: Colors.grey),
+                SizedBox(width: 10.w),
+                const Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: "Tìm và đặt dịch vụ tốt nhất",
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+                const Icon(Icons.mic, color: Colors.grey),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget topCategories() {
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 5.h),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 10.h),
+        SizedBox(
+          height: 100.h, // Chiều cao của các thẻ danh mục
+          child: ListView(
+            scrollDirection: Axis.horizontal,
             children: [
-              text16Normal(text: "Regular Fit Polo", color: AppColors.secondary),
-              text14Normal(text: "\$1,100", color: Colors.grey),
+              _categoryCard(
+                imagePath: AppImages.service1,
+                categoryName: "Bảo dưỡng",
+              ),
+              _categoryCard(
+                imagePath: AppImages.service2,
+                categoryName: "Dầu nhớt",
+              ),
+              _categoryCard(
+                imagePath: AppImages.service3,
+                categoryName: "Thay lốp",
+              ),
+              _categoryCard(
+                imagePath: AppImages.service2,
+                categoryName: "Sửa phanh",
+              ),
+              _categoryCard(
+                imagePath: AppImages.service2,
+                categoryName: "Rửa xe",
+              ),
+              _categoryCard(
+                imagePath: AppImages.service3,
+                categoryName: "Vệ sinh",
+              ),
+              _categoryCard(
+                imagePath: AppImages.service2,
+                categoryName: "Kiểm tra",
+              ),
             ],
           ),
         ),
@@ -112,37 +150,172 @@ Widget productCard() {
   );
 }
 
-// Lời mời gọi hành động
-Widget callToAction() {
+// Widget tạo các thẻ danh mục
+Widget _categoryCard({
+  required String imagePath,
+  required String categoryName,
+}) {
   return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 16.w),
-    child: ElevatedButton(
-      style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-        padding: EdgeInsets.symmetric(vertical: 12.h),
-      ),
-      onPressed: () {
-        // Xử lý khi nhấn nút
-      },
-      child: text16Normal(text: "Đặt ngay", color: Colors.white),
+    padding: EdgeInsets.only(right: 10.w), // Khoảng cách giữa các thẻ
+    child: Column(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10), // Bo tròn các góc
+          child: Image.asset(
+            imagePath,
+            height: 70.h,
+            width: 70.h,
+            fit: BoxFit.cover,
+          ),
+        ),
+        SizedBox(height: 5.h),
+        text14Normal(text: categoryName),
+      ],
     ),
   );
 }
 
-// Phần thông tin thêm
-Widget additionalInfoSection() {
-  return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 16.w),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        text24Normal(text: "Cung Cấp Giải Pháp Đổi Mới & Bền Vững"),
-        SizedBox(height: 8.h),
-        text14Normal(
-          text:
-          "Chúng tôi cam kết mang đến các giải pháp tiên tiến và thân thiện với môi trường trong việc bảo dưỡng và sửa chữa xe máy.",
+// PageView với Riverpod để theo dõi trạng thái chỉ số
+Widget servicePageView(BuildContext context, WidgetRef ref) {
+  final index =
+      ref.watch(homePageIndexProvider); // Theo dõi chỉ số hiện tại của PageView
+  PageController _pageController = PageController(
+      viewportFraction:
+          1.0); // Đặt viewportFraction bằng 1 để không hiển thị phần của trang bên cạnh
+
+  return Column(
+    children: [
+      // Sử dụng Flexible để tránh mở rộng quá mức
+      Flexible(
+        child: PageView(
+          controller: _pageController,
+          onPageChanged: (value) {
+            ref
+                .read(homePageIndexProvider.notifier)
+                .changeIndex(value); // Cập nhật chỉ số khi trang thay đổi
+          },
+          children: [
+            _serviceCard(
+              imagePath: AppImages.service1,
+              serviceName: 'Độ Xe Theo Yêu Cầu ',
+              onTap: () => print('Hair Cutting tapped'),
+            ),
+            _serviceCard(
+              imagePath: AppImages.service2,
+              serviceName: 'Thay Thế Phụ Tùng Chính Hãng',
+              onTap: () => print('Massage tapped'),
+            ),
+            _serviceCard(
+              imagePath: AppImages.service3,
+              serviceName: 'Bảo Dưỡng Định Kỳ ',
+              onTap: () => print('Hair Color tapped'),
+            ),
+          ],
         ),
-      ],
+      ),
+      SizedBox(height: 30.h), // Khoảng cách hợp lý dưới PageView
+      // DotsIndicator(
+      //   position: index,
+      //   dotsCount: 3,
+      //   decorator: DotsDecorator(
+      //     size: const Size.square(9.0),
+      //     activeColor: AppColors.primary,
+      //     activeSize: const Size(24.0, 8.0),
+      //     activeShape: RoundedRectangleBorder(
+      //       borderRadius: BorderRadius.circular(5),
+      //     ),
+      //   ),
+      // ),
+    ],
+  );
+}
+
+Widget _serviceCard({
+  required String imagePath,
+  required String serviceName,
+  required Function() onTap,
+}) {
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 5.h),
+    // Điều chỉnh padding bên ngoài
+    child: GestureDetector(
+      onTap: onTap,
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        child: Stack(
+          children: [
+            // Hình ảnh nền
+            Container(
+              height: 360.h, // Đặt chiều cao cụ thể cho thẻ
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15.0),
+                image: DecorationImage(
+                  image: AssetImage(imagePath),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            // Nội dung text và nút
+            Positioned(
+              bottom: 10.h, // Đặt nội dung ở dưới cùng
+              left: 16.w,
+              right: 16.w,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  text18Bold(text: serviceName, color: AppColors.primaryBg),
+                  // Hiển thị tên dịch vụ
+                  SizedBox(height: 10.h),
+                  appButton(
+                    buttonName: "ĐẶT LỊCH NGAY",
+                    buttonColor: AppColors.primary, // Màu nền trắng cho nút
+                    buttonTextColor: AppColors.primaryBg, // Màu chữ
+                    func: onTap,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     ),
   );
+}
+
+// CustomClipper để tạo đường cong dưới cùng của hình ảnh
+class BottomCurveClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    var path = Path();
+    path.lineTo(0, size.height - 50);
+    var firstControlPoint = Offset(size.width / 4, size.height);
+    var firstEndPoint = Offset(size.width / 2, size.height - 30);
+    path.quadraticBezierTo(
+      firstControlPoint.dx,
+      firstControlPoint.dy,
+      firstEndPoint.dx,
+      firstEndPoint.dy,
+    );
+
+    var secondControlPoint = Offset(size.width * 3 / 4, size.height - 80);
+    var secondEndPoint = Offset(size.width, size.height - 50);
+    path.quadraticBezierTo(
+      secondControlPoint.dx,
+      secondControlPoint.dy,
+      secondEndPoint.dx,
+      secondEndPoint.dy,
+    );
+
+    path.lineTo(size.width, 0);
+    path.close();
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) {
+    return false;
+  }
 }

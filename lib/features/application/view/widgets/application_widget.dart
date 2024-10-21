@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:radicalcare/common/utils/colors.dart';
+import 'package:radicalcare/features/home/view/home.dart';
 
 Widget bottomNavigationWidget({
   required int currentIndex,
@@ -23,27 +24,27 @@ var bottomTabs = <BottomNavigationBarItem>[
   const BottomNavigationBarItem(
     icon: Icon(Icons.home_outlined),
     activeIcon: Icon(Icons.home),
-    label: "Home",
+    label: "Trang chủ",
   ),
   const BottomNavigationBarItem(
-    icon: Icon(Icons.search_outlined),
-    activeIcon: Icon(Icons.search),
-    label: "Search",
+    icon: Icon(Icons.calendar_today_outlined),
+    activeIcon: Icon(Icons.calendar_today),
+    label: "Đặt lịch",
   ),
   const BottomNavigationBarItem(
     icon: Icon(Icons.build_outlined),
     activeIcon: Icon(Icons.build),
-    label: "Services",
+    label: "Dịch vụ",
   ),
   const BottomNavigationBarItem(
     icon: Icon(Icons.shopping_cart_outlined),
     activeIcon: Icon(Icons.shopping_cart),
-    label: "Cart",
+    label: "Giỏ hàng",
   ),
   const BottomNavigationBarItem(
     icon: Icon(Icons.person_outline),
     activeIcon: Icon(Icons.person),
-    label: "Account",
+    label: "Tài khoản",
   ),
 ];
 
@@ -67,7 +68,7 @@ Widget _bottomContainer({String? imagePath, Color? color}) {
 // Hàm appScreens để trả về các màn hình tương ứng với từng chỉ số.
 Widget appScreens({int index = 0}) {
   List<Widget> screens = [
-    const Center(child: Text('Home Screen')),
+    const HomePage(),
     const Center(child: Text('Search Screen')),
     const Center(child: Text('Services Screen')),
     const Center(child: Text('Shopping Cart Screen')),

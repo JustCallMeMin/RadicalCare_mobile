@@ -31,7 +31,7 @@ class AppPages {
       ),
       RouteEntity(
         path: AppRoutesNames.HOME ,
-        page: const Home(),
+        page: const HomePage(),
       ),
     ];
   }
@@ -43,7 +43,7 @@ class AppPages {
     }
 
     switch (settings.name) {
-      case AppRoutesNames.WELCOME:
+      case AppRoutesNames.APPLICATION:
         return MaterialPageRoute(
           builder: (_) => Welcome(),
           settings: settings,
@@ -65,7 +65,7 @@ class AppPages {
         );
       default:
         return MaterialPageRoute(
-          builder: (_) => Welcome(),
+          builder: (_) => const Application(),
           settings: settings,
         );
     }

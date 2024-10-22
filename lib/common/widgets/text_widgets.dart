@@ -45,7 +45,16 @@ Widget text28Normal({String text = "", Color color = AppColors.content}) {
     ),
   );
 }
-
+Widget text28Bold({String text = "", Color color = AppColors.content}) {
+  return Text(
+    text,
+    textAlign: TextAlign.center,
+    style: GoogleFonts.roboto(
+      textStyle:
+      TextStyle(color: color, fontSize: 28.sp, fontWeight: FontWeight.bold),
+    ),
+  );
+}
 Widget text16Normal({String text = "", Color color = AppColors.content}) {
   return Text(
     text,
@@ -56,7 +65,16 @@ Widget text16Normal({String text = "", Color color = AppColors.content}) {
     ),
   );
 }
-
+Widget text16Bold({String text = "", Color color = AppColors.content}) {
+  return Text(
+    text,
+    textAlign: TextAlign.center,
+    style: GoogleFonts.roboto(
+      textStyle:
+      TextStyle(color: color, fontSize: 16.sp, fontWeight: FontWeight.bold),
+    ),
+  );
+}
 Widget text14Normal(
     {String text = "",
     Color color = AppColors.content,

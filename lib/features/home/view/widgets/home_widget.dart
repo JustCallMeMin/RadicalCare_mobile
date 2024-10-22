@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:radicalcare/common/utils/images.dart';
 
 import '../../../../common/utils/colors.dart';
+import '../../../../common/widgets/app_textfieds.dart';
 import '../../../../common/widgets/button_widgets.dart';
 import '../../../../common/widgets/text_widgets.dart';
 import '../../provider/home_notifier.dart';
@@ -37,11 +38,11 @@ Widget headerSection({String imagePath = ""}) {
                     children: [
                       text28Normal(
                           text: "Nguyễn Văn Tèo Em", color: Colors.white),
-                      Icon(
-                        Icons.menu,
-                        color: Colors.white,
-                        size: 24.sp,
-                      ),
+                      // Icon(
+                      //   Icons.menu,
+                      //   color: Colors.white,
+                      //   size: 24.sp,
+                      // ),
                     ],
                   ),
                   SizedBox(height: 10.h),
@@ -63,39 +64,20 @@ Widget headerSection({String imagePath = ""}) {
         ),
         // Thêm search bar ở dưới cùng
         Positioned(
-          bottom: 100.h, // Điều chỉnh vị trí của search bar
+          bottom: 110.h,
           left: 25.w,
           right: 25.w,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 15.w),
-            height: 50.h,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(25),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 6,
-                  offset: Offset(0, 2),
-                ),
-              ],
+            child: appSearchBar(
+              hintText: "Tìm và đặt dịch vụ tốt nhất",
+              onSearch: (value) {
+                // Xử lý khi người dùng nhập nội dung tìm kiếm
+                print("Người dùng tìm: $value");
+              },
+              onVoiceSearchTap: () {
+                // Xử lý khi người dùng nhấn vào biểu tượng microphone
+                print("Microphone tapped");
+              },
             ),
-            child: Row(
-              children: [
-                const Icon(Icons.search, color: Colors.grey),
-                SizedBox(width: 10.w),
-                const Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: "Tìm và đặt dịch vụ tốt nhất",
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-                const Icon(Icons.mic, color: Colors.grey),
-              ],
-            ),
-          ),
         ),
       ],
     ),
@@ -104,7 +86,7 @@ Widget headerSection({String imagePath = ""}) {
 
 Widget topCategories() {
   return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 5.h),
+    padding: EdgeInsets.only(left: 0.w),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -112,6 +94,7 @@ Widget topCategories() {
         SizedBox(
           height: 100.h, // Chiều cao của các thẻ danh mục
           child: ListView(
+            padding: EdgeInsets.symmetric(horizontal: 25.w), // Đảm bảo tràn đều hai bên khi kéo
             scrollDirection: Axis.horizontal,
             children: [
               _categoryCard(
@@ -150,6 +133,7 @@ Widget topCategories() {
   );
 }
 
+
 // Widget tạo các thẻ danh mục
 Widget _categoryCard({
   required String imagePath,
@@ -177,55 +161,38 @@ Widget _categoryCard({
 
 // PageView với Riverpod để theo dõi trạng thái chỉ số
 Widget servicePageView(BuildContext context, WidgetRef ref) {
-  final index =
-      ref.watch(homePageIndexProvider); // Theo dõi chỉ số hiện tại của PageView
-  PageController _pageController = PageController(
-      viewportFraction:
-          1.0); // Đặt viewportFraction bằng 1 để không hiển thị phần của trang bên cạnh
+  ref.watch(homePageIndexProvider);
+  PageController _pageController = PageController(viewportFraction: 0.85); // Điều chỉnh tràn viền bên phải
 
   return Column(
     children: [
-      // Sử dụng Flexible để tránh mở rộng quá mức
-      Flexible(
-        child: PageView(
-          controller: _pageController,
-          onPageChanged: (value) {
-            ref
-                .read(homePageIndexProvider.notifier)
-                .changeIndex(value); // Cập nhật chỉ số khi trang thay đổi
-          },
-          children: [
-            _serviceCard(
-              imagePath: AppImages.service1,
-              serviceName: 'Độ Xe Theo Yêu Cầu ',
-              onTap: () => print('Hair Cutting tapped'),
-            ),
-            _serviceCard(
-              imagePath: AppImages.service2,
-              serviceName: 'Thay Thế Phụ Tùng Chính Hãng',
-              onTap: () => print('Massage tapped'),
-            ),
-            _serviceCard(
-              imagePath: AppImages.service3,
-              serviceName: 'Bảo Dưỡng Định Kỳ ',
-              onTap: () => print('Hair Color tapped'),
-            ),
-          ],
-        ),
+      SizedBox(
+        height: 360.h,
+          child: PageView(
+            controller: _pageController,
+            onPageChanged: (value) {
+              ref.read(homePageIndexProvider.notifier).changeIndex(value); // Cập nhật chỉ số khi trang thay đổi
+            },
+            children: [
+              _serviceCard(
+                imagePath: AppImages.service1,
+                serviceName: 'Độ Xe Theo Yêu Cầu',
+                onTap: () => print('Hair Cutting tapped'),
+              ),
+              _serviceCard(
+                imagePath: AppImages.service2,
+                serviceName: 'Thay Thế Phụ Tùng Chính Hãng',
+                onTap: () => print('Massage tapped'),
+              ),
+              _serviceCard(
+                imagePath: AppImages.service3,
+                serviceName: 'Bảo Dưỡng Định Kỳ',
+                onTap: () => print('Hair Color tapped'),
+              ),
+            ],
+          ),
       ),
-      SizedBox(height: 30.h), // Khoảng cách hợp lý dưới PageView
-      // DotsIndicator(
-      //   position: index,
-      //   dotsCount: 3,
-      //   decorator: DotsDecorator(
-      //     size: const Size.square(9.0),
-      //     activeColor: AppColors.primary,
-      //     activeSize: const Size(24.0, 8.0),
-      //     activeShape: RoundedRectangleBorder(
-      //       borderRadius: BorderRadius.circular(5),
-      //     ),
-      //   ),
-      // ),
+      SizedBox(height: 20.h),
     ],
   );
 }
@@ -236,8 +203,7 @@ Widget _serviceCard({
   required Function() onTap,
 }) {
   return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 5.h),
-    // Điều chỉnh padding bên ngoài
+    padding: EdgeInsets.only(right: 10.w), // Điều chỉnh khoảng cách giữa các thẻ
     child: GestureDetector(
       onTap: onTap,
       child: Card(
@@ -265,8 +231,7 @@ Widget _serviceCard({
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  text18Bold(text: serviceName, color: AppColors.primaryBg),
-                  // Hiển thị tên dịch vụ
+                  text18Bold(text: serviceName, color: AppColors.primaryBg), // Hiển thị tên dịch vụ
                   SizedBox(height: 10.h),
                   appButton(
                     buttonName: "ĐẶT LỊCH NGAY",
@@ -283,7 +248,6 @@ Widget _serviceCard({
     ),
   );
 }
-
 // CustomClipper để tạo đường cong dưới cùng của hình ảnh
 class BottomCurveClipper extends CustomClipper<Path> {
   @override

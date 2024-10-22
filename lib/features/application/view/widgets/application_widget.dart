@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:radicalcare/common/utils/colors.dart';
 import 'package:radicalcare/features/home/view/home.dart';
+import 'package:radicalcare/features/product/view/product.dart';
 
 Widget bottomNavigationWidget({
   required int currentIndex,
@@ -32,9 +33,9 @@ var bottomTabs = <BottomNavigationBarItem>[
     label: "Đặt lịch",
   ),
   const BottomNavigationBarItem(
-    icon: Icon(Icons.build_outlined),
-    activeIcon: Icon(Icons.build),
-    label: "Dịch vụ",
+    icon: Icon(Icons.storefront_outlined),
+    activeIcon: Icon(Icons.storefront),
+    label: "Sản phẩm",
   ),
   const BottomNavigationBarItem(
     icon: Icon(Icons.shopping_cart_outlined),
@@ -58,9 +59,9 @@ Widget _bottomContainer({String? imagePath, Color? color}) {
     ),
     child: imagePath != null
         ? Image.asset(
-      imagePath,
-      fit: BoxFit.cover,
-    )
+            imagePath,
+            fit: BoxFit.cover,
+          )
         : const Icon(Icons.home),
   );
 }
@@ -70,7 +71,7 @@ Widget appScreens({int index = 0}) {
   List<Widget> screens = [
     const HomePage(),
     const Center(child: Text('Search Screen')),
-    const Center(child: Text('Services Screen')),
+    const ProductPage(),
     const Center(child: Text('Shopping Cart Screen')),
     const Center(child: Text('Profile Screen')),
   ];

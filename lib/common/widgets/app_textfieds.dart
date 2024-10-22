@@ -98,3 +98,43 @@ Widget appTextField({
     ),
   );
 }
+
+Widget appSearchBar({
+  required String hintText,
+  required Function(String value) onSearch,
+  required VoidCallback onVoiceSearchTap,
+}) {
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 15.w),
+    height: 50.h,
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(25),
+      boxShadow: const [
+        BoxShadow(
+          color: Colors.black12,
+          blurRadius: 6,
+          offset: Offset(0, 2),
+        ),
+      ],
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,  // Thêm dòng này để Row không cố mở rộng hết không gian
+      children: [
+        const Icon(Icons.search, color: Colors.grey),
+        SizedBox(width: 10.w),
+        Flexible(  // Thay vì sử dụng Expanded, dùng Flexible để kiểm soát kích thước linh hoạt
+          child: TextField(
+            decoration: InputDecoration(
+              hintText: hintText,
+              border: InputBorder.none,
+            ),
+            onChanged: onSearch,
+          ),
+        ),
+        const Icon(Icons.mic, color: Colors.grey),
+      ],
+    ),
+  );
+}
+

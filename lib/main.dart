@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:radicalcare/common/utils/app_styles.dart';
 
-import '../common/routes/routes.dart';
-import 'global.dart';
+import 'common/routes/routes.dart';
+import 'features/global.dart';
 
 Future<void> main() async {
   await Global.init();

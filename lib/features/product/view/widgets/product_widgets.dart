@@ -1,13 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:radicalcare/common/utils/colors.dart';
 import 'package:radicalcare/common/widgets/text_widgets.dart';
-import '../../../../common/utils/images.dart';
+import '../../../../common/model/vehicle.dart';
+import '../../../../common/routes/app_routes_name.dart';
 import '../../../../common/widgets/app_textfieds.dart';
+import '../../provider/product_notifier.dart';
 
 // Thanh tìm kiếm sử dụng appSearchBar
-Widget searchBar() {
+Widget searchBar(BuildContext context) {
   return Padding(
     padding: EdgeInsets.all(16.w),
     child: Row(
@@ -24,46 +27,60 @@ Widget searchBar() {
           ),
         ),
         SizedBox(width: 10.w),
-        Container(
-          height: 50.h,
-          width: 50.w,
-          decoration: BoxDecoration(
-            color: AppColors.primary,
-            borderRadius: BorderRadius.circular(12),
+        GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(
+              context,
+              AppRoutesNames.FILTER, // Điều hướng đến màn hình filter
+            );
+          },
+          child: Container(
+            height: 50.h,
+            width: 50.w,
+            decoration: BoxDecoration(
+              color: AppColors.primary,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.filter_list, color: Colors.white),
           ),
-          child: const Icon(Icons.filter_list, color: Colors.white),
         ),
       ],
     ),
   );
 }
 
+
 // Bộ lọc danh mục sản phẩm
-Widget categoryFilter({required String selectedCategory, required Function(String) onCategorySelected}) {
-  return Padding(
-    padding: EdgeInsets.symmetric(vertical: 16.h),
-    child: SizedBox(
-      height: 50.h,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.only(left: 16.w, right: 16.w),
-        physics: const BouncingScrollPhysics(),
-        children: [
-          _buildCategoryButton("Tất cả", isSelected: selectedCategory == "Tất cả", onTap: () => onCategorySelected("Tất cả")),
-          _buildCategoryButton("Sản phẩm 1", isSelected: selectedCategory == "Sản phẩm 1", onTap: () => onCategorySelected("Sản phẩm 1")),
-          _buildCategoryButton("Sản phẩm 2", isSelected: selectedCategory == "Sản phẩm 2", onTap: () => onCategorySelected("Sản phẩm 2")),
-          _buildCategoryButton("Sản phẩm 3", isSelected: selectedCategory == "Sản phẩm 3", onTap: () => onCategorySelected("Sản phẩm 3")),
-          _buildCategoryButton("Sản phẩm 4", isSelected: selectedCategory == "Sản phẩm 4", onTap: () => onCategorySelected("Sản phẩm 4")),
-        ],
-      ),
+Widget categoryFilter({
+  required List<String> categories,
+  required String selectedCategory,
+  required Function(String) onCategorySelected,
+}) {
+  return SizedBox(
+    height: 55.h,
+    child: ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: categories.length,
+      itemBuilder: (context, index) {
+        String category = categories[index];
+        return Padding(
+          padding: EdgeInsets.only(left: index == 0 ? 16.w : 5.w),
+          child: _buildCategoryButton(
+            category,
+            isSelected: selectedCategory == category,
+            onTap: () => onCategorySelected(category),
+          ),
+        );
+      },
     ),
   );
 }
 
 // Tạo nút danh mục
-Widget _buildCategoryButton(String title, {required bool isSelected, required VoidCallback onTap}) {
+Widget _buildCategoryButton(String title,
+    {required bool isSelected, required VoidCallback onTap}) {
   return GestureDetector(
-    onTap: onTap, // Khi người dùng nhấn vào button
+    onTap: onTap,
     child: Padding(
       padding: EdgeInsets.only(right: 10.w),
       child: Container(
@@ -88,106 +105,98 @@ Widget _buildCategoryButton(String title, {required bool isSelected, required Vo
 Widget productList({
   required int currentPage,
   required String selectedCategory,
-  required Function(int) onPageChange,  // Thêm tham số onPageChange
+  required Function(int) onPageChange,
+  required WidgetRef ref,
 }) {
-  // Tạo một danh sách sản phẩm mẫu
-  List<Map<String, String>> allProducts = [
-    {"image": AppImages.service1, "title": "Product 1", "category": "Sản phẩm 1", "price": "\$100"},
-    {"image": AppImages.service2, "title": "Product 2", "category": "Sản phẩm 1", "price": "\$200"},
-    {"image": AppImages.service3, "title": "Product 3", "category": "Sản phẩm 2", "price": "\$300"},
-    {"image": AppImages.service1, "title": "Product 4", "category": "Sản phẩm 2", "price": "\$400"},
-    {"image": AppImages.service2, "title": "Product 2", "category": "Sản phẩm 3", "price": "\$500"},
-    {"image": AppImages.service1, "title": "Product 1", "category": "Sản phẩm 1", "price": "\$100"},
-    {"image": AppImages.service2, "title": "Product 2", "category": "Sản phẩm 1", "price": "\$200"},
-    {"image": AppImages.service3, "title": "Product 3", "category": "Sản phẩm 2", "price": "\$300"},
-    {"image": AppImages.service1, "title": "Product 4", "category": "Sản phẩm 2", "price": "\$400"},
-    {"image": AppImages.service2, "title": "Product 1", "category": "Sản phẩm 3", "price": "\$500"},
-    {"image": AppImages.service1, "title": "Product 1", "category": "Sản phẩm 1", "price": "\$100"},
-    {"image": AppImages.service2, "title": "Product 2", "category": "Sản phẩm 1", "price": "\$200"},
-    {"image": AppImages.service3, "title": "Product 3", "category": "Sản phẩm 4", "price": "\$300"},
-    {"image": AppImages.service1, "title": "Product 4", "category": "Sản phẩm 4", "price": "\$400"},
-    {"image": AppImages.service2, "title": "Product 3", "category": "Sản phẩm 3", "price": "\$500"},
-    {"image": AppImages.service1, "title": "Product 1", "category": "Sản phẩm 4", "price": "\$100"},
-    {"image": AppImages.service2, "title": "Product 2", "category": "Sản phẩm 4", "price": "\$200"},
-    {"image": AppImages.service3, "title": "Product 3", "category": "Sản phẩm 4", "price": "\$300"},
-    {"image": AppImages.service1, "title": "Product 4", "category": "Sản phẩm 2", "price": "\$400"},
-    {"image": AppImages.service2, "title": "Product 1", "category": "Sản phẩm 1", "price": "\$500"},
-    // Thêm sản phẩm khác vào đây
-  ];
+  final productState = ref.watch(productNotifierProvider); // Lấy trạng thái product
 
-  // Lọc sản phẩm theo danh mục
-  List<Map<String, String>> filteredProducts = selectedCategory == "Tất cả"
-      ? allProducts
-      : allProducts.where((product) => product["category"] == selectedCategory).toList();
+  return productState.when(
+    data: (products) {
+      // Hiển thị danh sách sản phẩm sau khi dữ liệu đã tải xong
+      List<Vehicle> filteredProducts = ref.read(productNotifierProvider.notifier).filterByCategory(selectedCategory);
 
-  // Số sản phẩm mỗi trang
+      if (filteredProducts.isEmpty) {
+        return const Center(child: Text("Không có sản phẩm trong danh mục này"));
+      }
+
+      return Column(
+        children: [
+          buildProductGrid(filteredProducts, currentPage),
+          buildPagination(filteredProducts.length, currentPage, (int newPage) {
+            ref.read(productPageProvider.notifier).setPage(newPage);
+          }),
+        ],
+      );
+    },
+    loading: () => const Center( // Hiển thị CircularProgressIndicator khi đang tải dữ liệu
+      child: CircularProgressIndicator(
+        backgroundColor: Colors.blue,
+        color: AppColors.primary,
+      ),
+    ),
+    error: (error, _) => Center(child: Text('Error: $error')), // Hiển thị khi có lỗi
+  );
+}
+
+
+// Hàm hiển thị GridView sản phẩm
+Widget buildProductGrid(List<Vehicle> products, int currentPage) {
   int productsPerPage = 6;
-  int totalProducts = filteredProducts.length;
-  int totalPages = (totalProducts / productsPerPage).ceil();
   int startIndex = currentPage * productsPerPage;
-  int endIndex = (startIndex + productsPerPage) > totalProducts ? totalProducts : (startIndex + productsPerPage);
+  int endIndex = (startIndex + productsPerPage) > products.length
+      ? products.length
+      : startIndex + productsPerPage;
+  List<Vehicle> currentProducts = products.sublist(startIndex, endIndex);
 
-  // Nếu không còn sản phẩm, hiển thị thông báo
-  if (totalProducts == 0) {
-    return Center(child: Text("Không có sản phẩm trong danh mục này"));
-  }
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: 16.w),
+    child: GridView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 16.w,
+        crossAxisSpacing: 16.w,
+        childAspectRatio: 0.68,
+      ),
+      itemCount: currentProducts.length,
+      itemBuilder: (context, index) {
+        var product = currentProducts[index];
+        return productItem(product: product, context: context);
+      },
+    ),
+  );
+}
 
-  // Nếu chỉ số trang vượt quá số sản phẩm, đặt lại về trang cuối
-  if (currentPage >= totalPages) {
-    onPageChange(totalPages - 1);
-  }
+// Hàm tạo thanh điều hướng trang
+Widget buildPagination(
+    int totalProducts, int currentPage, Function(int) onPageChange) {
+  int productsPerPage = 6;
+  int totalPages = (totalProducts / productsPerPage).ceil();
 
-  // Lấy danh sách sản phẩm cho trang hiện tại
-  List<Map<String, String>> currentProducts = filteredProducts.sublist(startIndex, endIndex);
-
-  return Column(
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
-        child: GridView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 16.w,
-            crossAxisSpacing: 16.w,
-            childAspectRatio: 0.75,
-          ),
-          itemCount: currentProducts.length,
-          itemBuilder: (context, index) {
-            var product = currentProducts[index];
-            return productItem(
-              imagePath: product["image"]!,
-              title: product["title"]!,
-              price: product["price"]!,
-            );
-          },
+      Opacity(
+        opacity: currentPage > 0 ? 1.0 : 0,
+        child: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed:
+              currentPage > 0 ? () => onPageChange(currentPage - 1) : null,
         ),
       ),
-      SizedBox(height: 20.h),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Nút trang trước (chỉ hiển thị khi không ở trang đầu)
-          if (currentPage > 0)
-            IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => onPageChange(currentPage - 1),
-            ),
-
-          // Hiển thị số trang
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text('Trang ${currentPage + 1} / $totalPages'),
-          ),
-
-          // Nút trang sau (chỉ hiển thị khi chưa phải trang cuối)
-          if (currentPage < totalPages - 1)
-            IconButton(
-              icon: const Icon(Icons.arrow_forward),
-              onPressed: () => onPageChange(currentPage + 1),
-            ),
-        ],
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Text('Trang ${currentPage + 1} / $totalPages'),
+      ),
+      Opacity(
+        opacity: currentPage < totalPages - 1 ? 1.0 : 0,
+        child: IconButton(
+          icon: const Icon(Icons.arrow_forward),
+          onPressed: currentPage < totalPages - 1
+              ? () => onPageChange(currentPage + 1)
+              : null,
+        ),
       ),
     ],
   );
@@ -195,87 +204,68 @@ Widget productList({
 
 // Thành phần sản phẩm
 Widget productItem({
-  required String imagePath,
-  required String title,
-  required String price,
-  String? discountPrice,
+  required BuildContext context, // Truyền context vào
+  required Vehicle product,
 }) {
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: Colors.grey.shade300),
-    ),
-    child: Stack(
-      children: [
-        // Hình ảnh sản phẩm
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-              child: Image.asset(
-                imagePath,
-                height: 150.h,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
+  return GestureDetector(
+    onTap: () {
+      Navigator.pushNamed(
+        context,
+        AppRoutesNames.PRODUCT_DETAIL, // Sử dụng tên route đã khai báo
+        arguments: product, // Truyền đối tượng product qua arguments
+      );
+    },
+    child: Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Hình ảnh sản phẩm
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+            child: Image.network(
+              product.imageUrls.isNotEmpty ? product.imageUrls[0] : '',
+              height: 150.h,
+              width: double.infinity,
+              fit: BoxFit.fitWidth,
+              errorBuilder: (context, error, stackTrace) =>
+                  const Icon(Icons.error), // Xử lý khi ảnh không tải được
             ),
-            Padding(
+          ),
+          // Sử dụng Expanded để tự điều chỉnh kích thước nội dung
+          Expanded(
+            child: Padding(
               padding: EdgeInsets.all(8.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Xử lý tràn văn bản cho tên sản phẩm
                   Text(
-                    title,
+                    product.vehicleName,
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
+                      color: AppColors.secondary,
                     ),
+                    maxLines: 2, // Giới hạn số dòng là 2
+                    overflow:
+                        TextOverflow.ellipsis, // Thêm dấu "..." nếu quá dài
                   ),
                   SizedBox(height: 5.h),
-                  Row(
-                    children: [
-                      Text(
-                        price,
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      if (discountPrice != null)
-                        Padding(
-                          padding: EdgeInsets.only(left: 8.w),
-                          child: Text(
-                            discountPrice,
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red,
-                            ),
-                          ),
-                        ),
-                    ],
+                  Text(
+                    product.version,
+                    style: TextStyle(fontSize: 14.sp),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-        // Biểu tượng yêu thích
-        Positioned(
-          top: 10.h,
-          right: 10.w,
-          child: Container(
-            padding: EdgeInsets.all(4.w),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.favorite_border, color: Colors.black),
           ),
-        ),
-      ],
+        ],
+      ),
     ),
   );
 }

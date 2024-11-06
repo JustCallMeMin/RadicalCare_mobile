@@ -4,16 +4,29 @@ import 'package:radicalcare/common/widgets/text_widgets.dart';
 
 import '../utils/colors.dart';
 
-AppBar buildAppbar({String text=""}) {
+AppBar buildTransparentAppbar({required BuildContext context, String text = ""}) {
   return AppBar(
-    bottom: PreferredSize(
-      preferredSize: Size.fromHeight(1),
-      child: Container(
-        height: 1,
-        color: Colors.grey.withOpacity(0.3),
-      ),
-    ),
+    backgroundColor: Colors.transparent, // Làm cho AppBar trong suốt
+    elevation: 0, // Bỏ đổ bóng của AppBar
     centerTitle: true,
-    title: text16Normal(text: text, color: AppColors.secondary),
+    title: text16Normal(
+      text: text,
+      color: AppColors.secondary,
+    ),
+    leading: IconButton(
+      icon: Icon(Icons.arrow_back_ios, color: AppColors.secondary),
+      onPressed: () {
+        // Quay lại trang trước
+        Navigator.pop(context);
+      },
+    ),
+    actions: [
+      IconButton(
+        icon: Icon(Icons.favorite_border, color: AppColors.secondary),
+        onPressed: () {
+          // Xử lý khi nhấn vào nút yêu thích
+        },
+      ),
+    ],
   );
 }

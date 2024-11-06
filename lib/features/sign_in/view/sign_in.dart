@@ -9,7 +9,6 @@ import 'package:radicalcare/common/widgets/text_widgets.dart';
 import 'package:radicalcare/features/sign_in/view/widgets/sign_in_widgets.dart';
 
 import '../../../common/global_loader/global_loaders.dart';
-import '../../../common/widgets/app_bar.dart';
 import '../../../common/widgets/app_divider.dart';
 import '../../../common/widgets/app_textfieds.dart';
 import '../controller/sign_in_controllers.dart';
@@ -51,10 +50,9 @@ class _SignInState extends ConsumerState<SignIn> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(
-                          height: 35.h,
                           child: Padding(
                             padding: EdgeInsets.only(left: 25.w, right: 25.w),
-                            child: text32Bold(text: "Đăng nhập vào tài khoản"),
+                            child: text32Bold(text: "Đăng nhập tài khoản"),
                           ),
                         ),
                         SizedBox(

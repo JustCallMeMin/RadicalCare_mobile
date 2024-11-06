@@ -5,7 +5,7 @@ import 'package:radicalcare/common/widgets/text_widgets.dart';
 import '../utils/colors.dart';
 
 Widget appDivider({
-  String text = "Or",
+  String text = "Hoặc",
   Color lineColor = AppColors.content,
   Color textColor = AppColors.content,
   double thickness = 1.0,

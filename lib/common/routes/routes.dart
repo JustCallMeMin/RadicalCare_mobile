@@ -1,13 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:radicalcare/features/favorite/view/favorite.dart';
 import 'package:radicalcare/features/sign_in/view/sign_in.dart';
 import 'package:radicalcare/features/sign_up/view/sign_up.dart';
 
 import '../../features/application/view/application.dart';
+import '../../features/filter/view/filter.dart';
 import '../../features/home/view/home.dart';
 import '../../features/welcome/welcome.dart';
+import '../model/vehicle.dart';
 import 'app_routes_name.dart';
+
+import 'package:radicalcare/features/product_detail/view/product_detail.dart'; // Import trang ProductDetailPage
 
 class AppPages {
   // Danh sách các route của ứng dụng
@@ -30,8 +35,12 @@ class AppPages {
         page: const Application(),
       ),
       RouteEntity(
-        path: AppRoutesNames.HOME ,
+        path: AppRoutesNames.HOME,
         page: const HomePage(),
+      ),
+      RouteEntity(
+        path: AppRoutesNames.FILTER,
+        page: FilterScreen(),
       ),
     ];
   }
@@ -45,7 +54,7 @@ class AppPages {
     switch (settings.name) {
       case AppRoutesNames.WELCOME:
         return MaterialPageRoute(
-          builder: (_) => Welcome(),
+          builder: (_) => const Application(),
           settings: settings,
         );
       case AppRoutesNames.SIGN_IN:
@@ -61,6 +70,22 @@ class AppPages {
       case AppRoutesNames.APPLICATION:
         return MaterialPageRoute(
           builder: (_) => const Application(),
+          settings: settings,
+        );
+      case AppRoutesNames.PRODUCT_DETAIL:
+        final product = settings.arguments as Vehicle;  // Lấy dữ liệu từ arguments
+        return MaterialPageRoute(
+          builder: (_) => ProductDetailPage(productId: product.chassisNumber),  // Truyền product vào ProductDetailPage
+          settings: settings,
+        );
+      case AppRoutesNames.FILTER:
+        return MaterialPageRoute(
+          builder: (_) => FilterScreen(),
+          settings: settings,
+        );
+      case AppRoutesNames.FAVOR:
+        return MaterialPageRoute(
+          builder: (_) => const FavoriteScreen(),
           settings: settings,
         );
       default:

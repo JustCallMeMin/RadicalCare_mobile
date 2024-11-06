@@ -4,13 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:radicalcare/common/utils/app_styles.dart';
 
 import 'common/routes/routes.dart';
-import 'features/global.dart';
 
 Future<void> main() async {
-  await Global.init();
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const ProviderScope(child: MyApp()));
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

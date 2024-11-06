@@ -50,7 +50,6 @@ class _SignUpState extends ConsumerState<SignUp> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(
-                          height: 35.h,
                           child: Padding(
                             padding: EdgeInsets.only(left: 25.w, right: 25.w),
                             child: text32Bold(text: "Tạo tài khoản"),
@@ -210,6 +209,7 @@ class _SignUpState extends ConsumerState<SignUp> {
                             Navigator.pushNamed(context, "/signIn");
                           },
                         ),
+                        SizedBox(height: 20.h)
                       ],
                     ),
                   ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:radicalcare/common/widgets/text_widgets.dart';
 
+import '../../features/search/view/search.dart';
 import '../utils/colors.dart';
 import '../utils/images.dart';
 import 'image_widgets.dart';
@@ -103,6 +104,9 @@ Widget appSearchBar({
   required String hintText,
   required Function(String value) onSearch,
   required VoidCallback onVoiceSearchTap,
+  required BuildContext context,
+  required TextEditingController searchController,
+  bool isOnSearchPage = false, // Truyền giá trị để nhận diện trang
 }) {
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 15.w),
@@ -119,20 +123,40 @@ Widget appSearchBar({
       ],
     ),
     child: Row(
-      mainAxisSize: MainAxisSize.min,  // Thêm dòng này để Row không cố mở rộng hết không gian
+      mainAxisSize: MainAxisSize.min,
       children: [
         const Icon(Icons.search, color: Colors.grey),
         SizedBox(width: 10.w),
-        Flexible(  // Thay vì sử dụng Expanded, dùng Flexible để kiểm soát kích thước linh hoạt
+        Flexible(
           child: TextField(
+            controller: searchController,
             decoration: InputDecoration(
               hintText: hintText,
               border: InputBorder.none,
             ),
-            onChanged: onSearch,
+            onTap: () {
+              if (!isOnSearchPage) {
+                // Nếu không phải SearchPage, chuyển sang SearchPage khi nhấn vào search bar
+                onSearch(""); // Không cần giá trị cụ thể
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SearchPage(keyword: searchController.text),
+                  ),
+                );
+              }
+            },
+            onSubmitted: (value) {
+              if (isOnSearchPage && value.isNotEmpty) {
+                onSearch(value); // Nếu đã ở trên SearchPage, thực hiện tìm kiếm
+              }
+            },
           ),
         ),
-        const Icon(Icons.mic, color: Colors.grey),
+        GestureDetector(
+          onTap: onVoiceSearchTap,
+          child: const Icon(Icons.mic, color: Colors.grey),
+        ),
       ],
     ),
   );

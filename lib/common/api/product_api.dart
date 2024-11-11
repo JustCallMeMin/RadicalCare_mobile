@@ -106,3 +106,4 @@ Future<CostTable> fetchCostById(int id) async {
     throw Exception('Error fetching cost information: $error');
   }
 }
+

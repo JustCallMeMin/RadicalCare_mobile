@@ -8,9 +8,12 @@ import '../../../../common/utils/colors.dart';
 import '../../../../common/widgets/app_textfieds.dart';
 import '../../../../common/widgets/button_widgets.dart';
 import '../../../../common/widgets/text_widgets.dart';
+import '../../../search/view/search.dart';
 import '../../provider/home_notifier.dart';
 
-Widget headerSection({String imagePath = ""}) {
+Widget headerSection(BuildContext context, {String imagePath = ""}) { // Thêm context vào tham số
+  final TextEditingController searchController = TextEditingController();
+
   return ClipPath(
     clipper: BottomCurveClipper(),
     child: Stack(
@@ -36,13 +39,7 @@ Widget headerSection({String imagePath = ""}) {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      text28Normal(
-                          text: "Nguyễn Văn Tèo Em", color: Colors.white),
-                      // Icon(
-                      //   Icons.menu,
-                      //   color: Colors.white,
-                      //   size: 24.sp,
-                      // ),
+                      text28Normal(text: "Nguyễn Văn Tèo Em", color: Colors.white),
                     ],
                   ),
                   SizedBox(height: 10.h),
@@ -62,22 +59,26 @@ Widget headerSection({String imagePath = ""}) {
             ),
           ),
         ),
-        // Thêm search bar ở dưới cùng
+        // Thêm appSearchBar ở dưới cùng
         Positioned(
           bottom: 110.h,
           left: 25.w,
           right: 25.w,
-            child: appSearchBar(
-              hintText: "Tìm và đặt dịch vụ tốt nhất",
-              onSearch: (value) {
-                // Xử lý khi người dùng nhập nội dung tìm kiếm
-                print("Người dùng tìm: $value");
-              },
-              onVoiceSearchTap: () {
-                // Xử lý khi người dùng nhấn vào biểu tượng microphone
-                print("Microphone tapped");
-              },
-            ),
+          child: appSearchBar(context: context,
+            hintText: "Tìm và đặt dịch vụ tốt nhất",
+            searchController: searchController,
+            onSearch: (value) {
+              if (value.isNotEmpty) {
+                // Chuyển hướng đến trang tìm kiếm
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => SearchPage(keyword: value,),
+                ));
+              }
+            },
+            onVoiceSearchTap: () {
+              print("Microphone tapped");
+            },
+          ),
         ),
       ],
     ),

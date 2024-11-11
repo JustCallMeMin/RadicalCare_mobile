@@ -8,7 +8,8 @@ import '../../../common/model/cost_table.dart';
 part 'product_notifier.g.dart';
 
 // Provider để lấy baseCost từ CostTable dựa trên costId
-final baseCostProvider = FutureProvider.family<double, int>((ref, costId) async {
+final baseCostProvider =
+    FutureProvider.family<double, int>((ref, costId) async {
   // Thay thế với API thực tế hoặc nguồn dữ liệu khác cho CostTable
   final response = await fetchCostById(costId); // Implement API call
   return response.baseCost ?? 0.0;
@@ -19,12 +20,12 @@ final baseCostProvider = FutureProvider.family<double, int>((ref, costId) async 
 class ProductCategory extends _$ProductCategory {
   @override
   String build() {
-    return "Tất cả";  // Mặc định khởi tạo danh mục là "Tất cả"
+    return "Tất cả"; // Mặc định khởi tạo danh mục là "Tất cả"
   }
 
   // Cập nhật danh mục sản phẩm
   void updateCategory(String newCategory) {
-    state = newCategory;  // Cập nhật danh mục mới
+    state = newCategory; // Cập nhật danh mục mới
   }
 }
 
@@ -50,7 +51,9 @@ class ProductNotifier extends _$ProductNotifier {
       return allProducts;
     } else {
       int selectedCategoryId = _getCategoryIdByName(category);
-      return allProducts.where((product) => product.categoryId == selectedCategoryId).toList();
+      return allProducts
+          .where((product) => product.categoryId == selectedCategoryId)
+          .toList();
     }
   }
 
@@ -121,7 +124,8 @@ class ImageNotifier extends _$ImageNotifier {
 }
 
 // Notifier cho danh sách yêu thích
-final favoriteNotifierProvider = StateNotifierProvider<FavoriteNotifier, AsyncValue<List<Vehicle>>>((ref) {
+final favoriteNotifierProvider =
+    StateNotifierProvider<FavoriteNotifier, AsyncValue<List<Vehicle>>>((ref) {
   return FavoriteNotifier();
 });
 
@@ -132,7 +136,8 @@ class FavoriteNotifier extends StateNotifier<AsyncValue<List<Vehicle>>> {
 
   Future<void> _loadFavorites() async {
     try {
-      final favorites = <Vehicle>[]; // Thay thế bằng logic lấy danh sách yêu thích nếu có
+      final favorites =
+          <Vehicle>[]; // Thay thế bằng logic lấy danh sách yêu thích nếu có
       state = AsyncValue.data(favorites);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
@@ -142,7 +147,9 @@ class FavoriteNotifier extends StateNotifier<AsyncValue<List<Vehicle>>> {
   void toggleFavorite(Vehicle vehicle) {
     state.whenData((favoriteProducts) {
       final updatedFavorites = favoriteProducts.contains(vehicle)
-          ? favoriteProducts.where((v) => v.chassisNumber != vehicle.chassisNumber).toList()
+          ? favoriteProducts
+              .where((v) => v.chassisNumber != vehicle.chassisNumber)
+              .toList()
           : [...favoriteProducts, vehicle];
       state = AsyncValue.data(updatedFavorites);
     });

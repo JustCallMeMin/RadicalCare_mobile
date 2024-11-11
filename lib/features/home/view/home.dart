@@ -33,7 +33,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             SizedBox(
               height: 300.h,
               width: double.infinity,
-              child: headerSection(imagePath: AppImages.homeBanner),
+              child: headerSection(context, imagePath: AppImages.homeBanner),
             ),
              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

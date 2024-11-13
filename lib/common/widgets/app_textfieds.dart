@@ -106,7 +106,9 @@ Widget appSearchBar({
   required VoidCallback onVoiceSearchTap,
   required BuildContext context,
   required TextEditingController searchController,
-  bool isOnSearchPage = false, // Truyền giá trị để nhận diện trang
+  required VoidCallback onClearSearch, // Hàm được gọi khi nội dung bị xóa hết
+  required FocusNode focusNode, // FocusNode để quản lý focus
+  bool isOnSearchPage = false, // Xác định đang ở SearchPage hay không
 }) {
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 15.w),
@@ -130,25 +132,33 @@ Widget appSearchBar({
         Flexible(
           child: TextField(
             controller: searchController,
+            focusNode: focusNode, // Gắn FocusNode
             decoration: InputDecoration(
               hintText: hintText,
               border: InputBorder.none,
             ),
             onTap: () {
               if (!isOnSearchPage) {
-                // Nếu không phải SearchPage, chuyển sang SearchPage khi nhấn vào search bar
-                onSearch(""); // Không cần giá trị cụ thể
+                // Nếu chưa ở SearchPage, chuyển sang SearchPage khi nhấn vào
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SearchPage(keyword: searchController.text),
+                    builder: (context) =>
+                        SearchPage(keyword: searchController.text),
                   ),
                 );
               }
             },
+            onChanged: (value) {
+              if (isOnSearchPage && value.isEmpty) {
+                // Khi nội dung bị xóa hết, gọi hàm onClearSearch
+                onClearSearch();
+              }
+            },
             onSubmitted: (value) {
               if (isOnSearchPage && value.isNotEmpty) {
-                onSearch(value); // Nếu đã ở trên SearchPage, thực hiện tìm kiếm
+                // Nếu đã ở SearchPage, thực hiện tìm kiếm
+                onSearch(value);
               }
             },
           ),

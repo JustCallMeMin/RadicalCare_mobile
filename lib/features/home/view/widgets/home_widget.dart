@@ -11,8 +11,9 @@ import '../../../../common/widgets/text_widgets.dart';
 import '../../../search/view/search.dart';
 import '../../provider/home_notifier.dart';
 
-Widget headerSection(BuildContext context, {String imagePath = ""}) { // Thêm context vào tham số
+Widget headerSection(BuildContext context, {String imagePath = ""}) {
   final TextEditingController searchController = TextEditingController();
+  final FocusNode focusNode = FocusNode(); // Thêm FocusNode
 
   return ClipPath(
     clipper: BottomCurveClipper(),
@@ -64,16 +65,22 @@ Widget headerSection(BuildContext context, {String imagePath = ""}) { // Thêm c
           bottom: 110.h,
           left: 25.w,
           right: 25.w,
-          child: appSearchBar(context: context,
+          child: appSearchBar(
+            context: context,
             hintText: "Tìm và đặt dịch vụ tốt nhất",
             searchController: searchController,
+            focusNode: focusNode, // Gắn FocusNode vào
             onSearch: (value) {
               if (value.isNotEmpty) {
-                // Chuyển hướng đến trang tìm kiếm
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => SearchPage(keyword: value,),
-                ));
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => SearchPage(keyword: value),
+                  ),
+                );
               }
+            },
+            onClearSearch: () {
+              print("Search bar cleared"); // Debug khi nội dung bị xóa hết
             },
             onVoiceSearchTap: () {
               print("Microphone tapped");

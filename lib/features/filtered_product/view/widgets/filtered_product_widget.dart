@@ -11,7 +11,7 @@ Widget filterVehicleItemWidget({
   required WidgetRef ref,
 }) {
   final formattedPrice = NumberFormat.currency(locale: 'vi_VN', symbol: 'VNĐ').format(vehicle.baseCost);
-
+  print('Base cost: ${vehicle.baseCost}'); // Debug giá trị baseCost
   return GestureDetector(
     onTap: onTap,
     child: Card(

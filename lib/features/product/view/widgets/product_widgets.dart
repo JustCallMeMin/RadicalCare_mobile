@@ -8,32 +8,40 @@ import '../../../../common/model/vehicle.dart';
 import '../../../../common/routes/app_routes_name.dart';
 import '../../../../common/widgets/app_textfieds.dart';
 import '../../../search/view/search.dart';
-import '../../../search/view/search_result.dart';
 import '../../provider/product_notifier.dart';
 
 
-// Thanh tìm kiếm sử dụng appSearchBar
-Widget searchBar(BuildContext context, WidgetRef ref, TextEditingController searchController) {
+Widget searchBar(
+    BuildContext context,
+    WidgetRef ref,
+    TextEditingController searchController,
+    ) {
+  final FocusNode focusNode = FocusNode();
+
   return Padding(
     padding: EdgeInsets.all(16.w),
     child: Row(
       children: [
         Expanded(
-          child: appSearchBar(context: context,
+          child: appSearchBar(
+            context: context,
             hintText: 'Tìm kiếm sản phẩm...',
             searchController: searchController,
+            focusNode: focusNode, // Gắn FocusNode
             onSearch: (value) {
               if (value.isNotEmpty) {
-                // Điều hướng tới SearchPage khi nhấn vào thanh tìm kiếm
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => SearchPage(keyword: value),
                 ));
               }
             },
+            onClearSearch: () {
+              print("Search content cleared");
+            },
             onVoiceSearchTap: () {
               print("Microphone tapped");
             },
-            isOnSearchPage: false, // Chỉ cần điều hướng từ ProductPage
+            isOnSearchPage: false, // Đang ở ProductPage
           ),
         ),
         SizedBox(width: 10.w),

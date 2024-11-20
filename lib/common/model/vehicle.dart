@@ -38,6 +38,21 @@ class Vehicle {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'chassisNumber': chassisNumber,
+      'vehicleName': vehicleName,
+      'version': version,
+      'color': color,
+      'segment': segment,
+      'imageUrls': imageUrls,
+      'categoryId': categoryId,
+      'isFavorite': isFavorite,
+      'costId': costId,
+      'baseCost': baseCost,
+    };
+  }
+
   Vehicle copyWith({
     String? chassisNumber,
     String? vehicleName,

@@ -17,29 +17,27 @@ class ProductDetailPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: productDetail.when(
-        data: (product) =>
-            SafeArea(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        data: (product) => SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 16.h),
+                // Stack chỉ chứa hình ảnh và header
+                Stack(
                   children: [
-                    SizedBox(height: 16.h,),
-                    // Stack chỉ chứa hình ảnh và header
-                    Stack(
-                      children: [
-                        ProductImages(imageUrls: product.imageUrls),
-                        productDetailHeader(context: context, ref: ref, product: product), // Thêm ref vào đây
-                      ],
-                    ),
-                    // Các thành phần chi tiết sản phẩm
-                    productInfo(product.vehicleName, product.version, product),
-                    productSizeSelector(),
-                    productColorSelector(),
-                    SizedBox(height: 20.h),
+                    ProductImages(imageUrls: product.imageUrls),
+                    productDetailHeader(context: context, ref: ref, product: product), // Thêm ref vào đây
                   ],
                 ),
-              ),
+                // Các thành phần chi tiết sản phẩm
+                productInfo(product.vehicleName, product.version, product),
+                productColorSelector(),
+                SizedBox(height: 20.h),
+              ],
             ),
+          ),
+        ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(child: Text('Error: $error')),
       ),

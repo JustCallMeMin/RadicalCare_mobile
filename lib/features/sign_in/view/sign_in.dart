@@ -9,7 +9,9 @@ import 'package:radicalcare/common/widgets/text_widgets.dart';
 import 'package:radicalcare/features/sign_in/provider/sign_in_notifier.dart';
 import 'package:radicalcare/features/sign_in/view/widgets/sign_in_widgets.dart';
 
-import '../../../common/global_loader/global_loaders.dart';
+
+import '../../../common/routes/app_routes_name.dart';
+import '../../../common/utils/secure_storage.dart';
 import '../../../common/widgets/app_divider.dart';
 import '../../../common/widgets/app_textfieds.dart';
 
@@ -26,7 +28,8 @@ class _SignInState extends ConsumerState<SignIn> {
 
   @override
   Widget build(BuildContext context) {
-    final signInNotifier = ref.watch(signInNotifierProvider); // Lắng nghe trạng thái
+    final signInNotifier =
+    ref.watch(signInNotifierProvider); // Lắng nghe trạng thái
     final isLoading = signInNotifier.isLoading; // Trạng thái tải
 
     return Container(
@@ -72,7 +75,9 @@ class _SignInState extends ConsumerState<SignIn> {
                     obscureText: false,
                     keyboardType: TextInputType.text,
                     func: (value) {
-                      ref.read(signInNotifierProvider.notifier).onUsernameChange(value);
+                      ref
+                          .read(signInNotifierProvider.notifier)
+                          .onUsernameChange(value);
                     },
                     validator: (value) => ref
                         .read(signInNotifierProvider.notifier)
@@ -118,11 +123,23 @@ class _SignInState extends ConsumerState<SignIn> {
                   Center(
                     child: appButton(
                       buttonName: "Đăng nhập",
-                      func: () {
+                      func: () async {
                         if (_formKey.currentState!.validate()) {
-                          ref
-                              .read(signInNotifierProvider.notifier)
-                              .signInUser(context);
+                          final token = await ref.read(signInNotifierProvider.notifier).signInUser();
+                          if (token != null) {
+                            // Lưu token vào SecureStorage
+                            await SecureStorageManager.saveToken(token);
+                            print("SignIn: Token saved successfully. Navigating to Application.");
+
+                            // Điều hướng đến Application
+                            Navigator.pushReplacementNamed(context, AppRoutesNames.APPLICATION);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Đăng nhập thất bại, vui lòng thử lại.'),
+                              ),
+                            );
+                          }
                         }
                       },
                     ),
@@ -167,9 +184,11 @@ class _SignInState extends ConsumerState<SignIn> {
                   registerPrompt(
                     context: context,
                     func: () {
-                      Navigator.pushNamed(context, "/signUp");
+                      print("SignIn: Navigating to SignUp.");
+                      Navigator.pushNamed(
+                          context, AppRoutesNames.SIGN_UP);
                     },
-                  )
+                  ),
                 ],
               ),
             ),

@@ -6,8 +6,8 @@ import 'package:radicalcare/common/widgets/text_widgets.dart';
 import 'package:radicalcare/features/product/view/widgets/product_widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../../../common/api/product_api.dart';
+import '../../../common/model/category.dart';
 import '../../../common/utils/colors.dart';
-import '../../search/view/search.dart';
 import '../provider/product_notifier.dart';
 
 class ProductPage extends ConsumerStatefulWidget {
@@ -19,7 +19,7 @@ class ProductPage extends ConsumerStatefulWidget {
 
 class _ProductPageState extends ConsumerState<ProductPage> {
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-  List<String> categories = [];
+  List<Category> categories = [];
   bool isLoadingCategories = true;
   final TextEditingController _searchController = TextEditingController();
 
@@ -35,9 +35,9 @@ class _ProductPageState extends ConsumerState<ProductPage> {
   void _initializeNotificationPlugin() {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    AndroidInitializationSettings('@mipmap/ic_launcher');
     const InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
+    InitializationSettings(android: initializationSettingsAndroid);
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
@@ -55,16 +55,23 @@ class _ProductPageState extends ConsumerState<ProductPage> {
   // Gọi API để tải danh mục
   Future<void> _loadCategories() async {
     try {
-      List<String> fetchedCategories = await fetchCategories();
-      setState(() {
-        categories = [
-          'Tất cả',
-          ...fetchedCategories
-        ]; // Thêm 'Tất cả' vào danh sách
-        isLoadingCategories = false;
-      });
+      final response = await fetchCategories(); // Gọi hàm fetchCategories()
+      if (response["success"] == true) {
+        // Lấy danh sách dữ liệu từ "data"
+        final List<dynamic> data = response["data"];
+        // Chuyển đổi từng phần tử thành đối tượng Category
+        final List<Category> fetchedCategories =
+        data.map((json) => Category.fromJson(json)).toList();
+
+        setState(() {
+          categories = fetchedCategories; // Gán danh sách danh mục đầy đủ
+          isLoadingCategories = false;
+        });
+      } else {
+        throw Exception(response["message"] ?? "Failed to fetch categories.");
+      }
     } catch (e) {
-      print("Failed to load categories: $e");
+      debugPrint("Failed to load categories: $e");
       setState(() {
         isLoadingCategories = false;
       });
@@ -74,7 +81,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
   // Hiển thị thông báo
   Future<void> showNotification() async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
+    AndroidNotificationDetails(
       'your_channel_id',
       'your_channel_name',
       channelDescription: 'your_channel_description',
@@ -83,7 +90,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
       showWhen: false,
     );
     const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+    NotificationDetails(android: androidPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
       0,
       'Sản phẩm mới!',
@@ -107,7 +114,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.only(left: 25.w, right: 25.w),
+                padding: EdgeInsets.symmetric(horizontal: 25.w),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -119,7 +126,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                         size: 24.sp,
                       ),
                       onPressed:
-                          showNotification, // Nhấn vào biểu tượng thông báo
+                      showNotification, // Nhấn vào biểu tượng thông báo
                     ),
                   ],
                 ),
@@ -134,16 +141,12 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                 ) // Hiển thị khi đang load danh mục
               else
                 categoryFilter(
-                  categories: categories,
+                  categories: categories.map((c) => c.name).toList(),
                   selectedCategory: selectedCategory,
-                  // Lấy từ ProductCategoryNotifier
                   onCategorySelected: (category) {
-                    ref
-                        .read(productCategoryProvider.notifier)
-                        .updateCategory(category);
-                    ref
-                        .read(productPageProvider.notifier)
-                        .setPage(0); // Reset lại trang khi thay đổi danh mục
+                    ref.read(productCategoryProvider.notifier).updateCategory(category); // Cập nhật danh mục
+                    ref.read(productNotifierProvider.notifier).filterByCategory(category); // Lọc sản phẩm
+                    ref.read(productPageProvider.notifier).setPage(0); // Reset lại trang
                   },
                 ),
               SizedBox(height: 10.h),
@@ -155,11 +158,9 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                 currentPage: currentPage,
                 selectedCategory: selectedCategory,
                 onPageChange: (newPage) {
-                  ref
-                      .read(productPageProvider.notifier)
-                      .setPage(newPage); // Cập nhật trang mới
+                  ref.read(productPageProvider.notifier).setPage(newPage); // Cập nhật trang mới
                 },
-                ref: ref,
+                ref: ref, // Truyền WidgetRef
               ),
               SizedBox(height: 20.h),
             ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-
 import '../../../common/api/auth_service_api.dart';
+import '../../../common/utils/secure_storage.dart'; // Import SecureStorageManager
 
 part 'sign_in_notifier.g.dart';
 
@@ -39,14 +39,12 @@ class SignInNotifier extends _$SignInNotifier {
     return null;
   }
 
-  Future<void> signInUser(BuildContext context) async {
+  Future<String?> signInUser() async {
     // Validate username và password trước khi gửi request.
     if (validateUsername(state.username) != null ||
         validatePassword(state.password) != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Thông tin đăng nhập không hợp lệ')),
-      );
-      return;
+      print("SignInNotifier: Validation failed.");
+      return null;
     }
 
     state = state.copyWith(isLoading: true);
@@ -56,19 +54,19 @@ class SignInNotifier extends _$SignInNotifier {
 
       if (response['success']) {
         final token = response['token'];
-        print("Token: $token");
+        print("SignInNotifier: Received token - $token");
 
-        // TODO: Save token securely
-        Navigator.pushReplacementNamed(context, '/application'); // Điều hướng sau khi đăng nhập thành công.
+        // Lưu token
+        await SecureStorageManager.saveToken(token);
+
+        return token;
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response['message'] ?? 'Đăng nhập thất bại')),
-        );
+        print("SignInNotifier: Login failed - ${response['message']}");
+        return null;
       }
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Đã xảy ra lỗi trong quá trình đăng nhập.')),
-      );
+      print('SignInNotifier: Error during sign-in: $error');
+      return null;
     } finally {
       state = state.copyWith(isLoading: false);
     }

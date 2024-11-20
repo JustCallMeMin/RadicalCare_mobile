@@ -6,7 +6,7 @@ part of 'sign_in_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$signInNotifierHash() => r'30b0afa30a0307c0a93acc38fee54c6ef7ee1066';
+String _$signInNotifierHash() => r'67d252357a8be1b1ba53ee4412f60a9e7d25d227';
 
 /// See also [SignInNotifier].
 @ProviderFor(SignInNotifier)
@@ -23,4 +23,4 @@ final signInNotifierProvider =
 
 typedef _$SignInNotifier = AutoDisposeNotifier<SignInState>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

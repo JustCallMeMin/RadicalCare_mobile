@@ -29,15 +29,15 @@ Widget appOnboardingPage(PageController controller, BuildContext context,
 Widget _nextButton(int index, PageController controller, BuildContext context) {
   return GestureDetector(
     onTap: () {
+      print("Current index: $index");
       if (index < 3) {
-        controller.animateToPage(index,
+        print("Navigating to page ${index + 1}");
+        controller.animateToPage(index + 1,
             duration: Duration(milliseconds: 300), curve: Curves.linear);
       } else {
-        Navigator.pushNamed(context, AppRoutesNames.SIGN_UP);
-        // Navigator.push(
-        //   context,MaterialPageRoute(builder: (BuildContext context)=>const SignIn(),),
-        // );
-    }
+        print("Navigating to SignIn screen");
+        Navigator.pushNamed(context, AppRoutesNames.SIGN_IN);
+      }
     },
     child: Container(
       width: 325,

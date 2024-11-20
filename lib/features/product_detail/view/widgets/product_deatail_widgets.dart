@@ -180,37 +180,36 @@ Widget productInfo(String title, String version, Vehicle product) {
   );
 }
 
-
-// Widget chọn size (nếu cần thiết với các loại sản phẩm khác)
-Widget productSizeSelector() {
-  return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 16.w),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Select Size",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp),
-        ),
-        SizedBox(height: 8.h),
-        Row(
-          children: List.generate(6, (index) {
-            List<String> sizes = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
-            return Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: ChoiceChip(
-                label: Text(sizes[index]),
-                selected: index == 0, // Chọn mặc định
-                onSelected: (bool selected) {},
-                selectedColor: AppColors.primary,
-              ),
-            );
-          }),
-        ),
-      ],
-    ),
-  );
-}
+// // Widget chọn size (nếu cần thiết với các loại sản phẩm khác)
+// Widget productSizeSelector() {
+//   return Padding(
+//     padding: EdgeInsets.symmetric(horizontal: 16.w),
+//     child: Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Text(
+//           "Select Size",
+//           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp),
+//         ),
+//         SizedBox(height: 8.h),
+//         Row(
+//           children: List.generate(6, (index) {
+//             List<String> sizes = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+//             return Padding(
+//               padding: const EdgeInsets.only(right: 8.0),
+//               child: ChoiceChip(
+//                 label: Text(sizes[index]),
+//                 selected: index == 0, // Chọn mặc định
+//                 onSelected: (bool selected) {},
+//                 selectedColor: AppColors.primary,
+//               ),
+//             );
+//           }),
+//         ),
+//       ],
+//     ),
+//   );
+// }
 
 // Widget chọn màu
 Widget productColorSelector() {

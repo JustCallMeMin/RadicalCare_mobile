@@ -22,7 +22,7 @@ final productCategoryProvider =
 );
 
 typedef _$ProductCategory = AutoDisposeNotifier<String>;
-String _$productNotifierHash() => r'bfb29e440464aa06151b88b5a1d5dc6760a31728';
+String _$productNotifierHash() => r'b660079d2943c142b83199c447794dce238dadba';
 
 /// See also [ProductNotifier].
 @ProviderFor(ProductNotifier)
@@ -207,6 +207,8 @@ class ProductDetailNotifierProvider
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin ProductDetailNotifierRef on AutoDisposeAsyncNotifierProviderRef<Vehicle> {
   /// The parameter `productId` of this provider.
   String get productId;
@@ -238,4 +240,4 @@ final imageNotifierProvider =
 
 typedef _$ImageNotifier = AutoDisposeNotifier<int>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

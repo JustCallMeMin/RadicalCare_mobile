@@ -8,6 +8,7 @@ import 'package:radicalcare/common/widgets/app_divider.dart';
 import 'package:radicalcare/common/widgets/button_widgets.dart';
 import 'package:radicalcare/common/widgets/text_widgets.dart';
 import 'package:radicalcare/features/sign_up/view/widgets/sign_up_widgets.dart';
+import '../../../common/routes/app_routes_name.dart';
 import '../../../common/widgets/app_textfieds.dart';
 import '../provider/register_notifier.dart';
 
@@ -27,7 +28,7 @@ class _SignUpState extends ConsumerState<SignUp> {
   Widget build(BuildContext context) {
     final registerNotifier = ref.watch(registerNotifierProvider);
     final registerNotifierNotifier =
-    ref.read(registerNotifierProvider.notifier);
+        ref.read(registerNotifierProvider.notifier);
 
     return Container(
       color: AppColors.primaryBg,
@@ -49,8 +50,8 @@ class _SignUpState extends ConsumerState<SignUp> {
                   SizedBox(
                     child: Padding(
                       padding: EdgeInsets.only(left: 25.w, right: 25.w),
-                      child: text14Normal(
-                          text: "Bắt đầu tạo tài khoản của bạn"),
+                      child:
+                          text14Normal(text: "Bắt đầu tạo tài khoản của bạn"),
                     ),
                   ),
                   SizedBox(height: 38.h),
@@ -99,9 +100,8 @@ class _SignUpState extends ConsumerState<SignUp> {
                     hintText: "Nhập mật khẩu của bạn",
                     obscureText: !isPasswordVisible,
                     isPasswordField: true,
-                    iconName: isPasswordVisible
-                        ? AppImages.eyeClose
-                        : AppImages.eye,
+                    iconName:
+                        isPasswordVisible ? AppImages.eyeClose : AppImages.eye,
                     onIconTap: () {
                       setState(() {
                         isPasswordVisible = !isPasswordVisible;
@@ -124,8 +124,7 @@ class _SignUpState extends ConsumerState<SignUp> {
                         : AppImages.eye,
                     onIconTap: () {
                       setState(() {
-                        isConfirmPasswordVisible =
-                        !isConfirmPasswordVisible;
+                        isConfirmPasswordVisible = !isConfirmPasswordVisible;
                       });
                     },
                     func: registerNotifierNotifier.onUserConfirmPasswordChange,
@@ -142,7 +141,8 @@ class _SignUpState extends ConsumerState<SignUp> {
                     isPasswordField: false,
                     keyboardType: TextInputType.streetAddress,
                     func: registerNotifierNotifier.onAddressChange,
-                    validator: (_) => registerNotifierNotifier.validateAddress(),
+                    validator: (_) =>
+                        registerNotifierNotifier.validateAddress(),
                   ),
                   SizedBox(height: 16.h),
                   // Date of Birth TextField
@@ -153,9 +153,8 @@ class _SignUpState extends ConsumerState<SignUp> {
                     controller: TextEditingController()
                       ..text = ref.watch(registerNotifierProvider).doB,
                     onDateSelected: (selectedDate) {
-                      ref
-                          .read(registerNotifierProvider.notifier)
-                          .onDoBChange("${selectedDate.toLocal()}".split(' ')[0]);
+                      ref.read(registerNotifierProvider.notifier).onDoBChange(
+                          "${selectedDate.toLocal()}".split(' ')[0]);
                     },
                     initialDate: DateTime.now(),
                     firstDate: DateTime(1900),
@@ -167,7 +166,7 @@ class _SignUpState extends ConsumerState<SignUp> {
                     child: text14Normal(
                         textAlign: TextAlign.start,
                         text:
-                        "Bằng cách tạo tài khoản, bạn đồng ý với các điều khoản và điều kiện của chúng tôi."),
+                            "Bằng cách tạo tài khoản, bạn đồng ý với các điều khoản và điều kiện của chúng tôi."),
                   ),
                   SizedBox(height: 16.h),
                   Center(
@@ -178,11 +177,10 @@ class _SignUpState extends ConsumerState<SignUp> {
                       func: registerNotifier.isLoading
                           ? null
                           : () {
-                        if (_formKey.currentState!.validate()) {
-                          registerNotifierNotifier.handleSignUp(
-                              context);
-                        }
-                      },
+                              if (_formKey.currentState!.validate()) {
+                                registerNotifierNotifier.handleSignUp(context);
+                              }
+                            },
                     ),
                   ),
                   SizedBox(height: 16.h),
@@ -191,7 +189,8 @@ class _SignUpState extends ConsumerState<SignUp> {
                   loginPrompt(
                     context: context,
                     func: () {
-                      Navigator.pushNamed(context, "/signIn");
+                      print("SignUp: Navigating to SignIn.");
+                      Navigator.pushNamed(context, AppRoutesNames.SIGN_IN);
                     },
                   ),
                   SizedBox(height: 20.h)

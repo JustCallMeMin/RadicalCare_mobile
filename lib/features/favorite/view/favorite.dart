@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:radicalcare/features/favorite/view/widgets/favorite_widget.dart';
-import 'package:radicalcare/features/filtered_product/view/widgets/filtered_product_widget.dart';
+import '../../../common/utils/colors.dart';
 import '../../product/provider/product_notifier.dart';
 import '../../product_detail/view/product_detail.dart';
 
@@ -13,9 +13,19 @@ class FavoriteScreen extends ConsumerWidget {
     final favoriteProductsAsync = ref.watch(favoriteNotifierProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.white, // Nền trắng
       appBar: AppBar(
-        title: const Text('Sản phẩm yêu thích'),
+        backgroundColor: Colors.white, // Nền trắng
+        elevation: 0, // Loại bỏ bóng
+        centerTitle: true, // Căn giữa tiêu đề
+        automaticallyImplyLeading: false, // Ẩn nút quay về
+        title: const Text(
+          'Sản phẩm yêu thích',
+          style: TextStyle(
+            color: AppColors.secondary, // Màu chữ đen
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: favoriteProductsAsync.when(
         data: (favoriteProducts) {
@@ -40,7 +50,8 @@ class FavoriteScreen extends ConsumerWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ProductDetailPage(productId: vehicle.chassisNumber),
+                        builder: (context) =>
+                            ProductDetailPage(productId: vehicle.chassisNumber),
                       ),
                     );
                   },

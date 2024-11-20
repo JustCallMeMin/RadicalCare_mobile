@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:radicalcare/features/favorite/view/favorite.dart';
 import 'package:radicalcare/features/sign_in/view/sign_in.dart';
@@ -15,7 +14,6 @@ import 'app_routes_name.dart';
 import 'package:radicalcare/features/product_detail/view/product_detail.dart'; // Import trang ProductDetailPage
 
 class AppPages {
-  // Danh sách các route của ứng dụng
   static List<RouteEntity> routes() {
     return [
       RouteEntity(
@@ -39,18 +37,17 @@ class AppPages {
         page: const HomePage(),
       ),
       RouteEntity(
-        path: AppRoutesNames.FILTER,
+        path: AppRoutesNames.PRODUCT_DETAIL,
         page: FilterScreen(),
+      ),
+      RouteEntity(
+        path: AppRoutesNames.FAVOR,
+        page: const FavoriteScreen(),
       ),
     ];
   }
 
-  // Phương thức để generate routes cho Navigator
   static MaterialPageRoute generateRouteSettings(RouteSettings settings) {
-    if (kDebugMode) {
-      print('Navigating to ${settings.name}');
-    }
-
     switch (settings.name) {
       case AppRoutesNames.WELCOME:
         return MaterialPageRoute(
@@ -67,17 +64,25 @@ class AppPages {
           builder: (_) => const SignUp(),
           settings: settings,
         );
-      case AppRoutesNames.APPLICATION:
+      case AppRoutesNames.HOME:
         return MaterialPageRoute(
-          builder: (_) => const Application(),
+          builder: (_) => const HomePage(),
           settings: settings,
         );
       case AppRoutesNames.PRODUCT_DETAIL:
-        final product = settings.arguments as Vehicle;  // Lấy dữ liệu từ arguments
-        return MaterialPageRoute(
-          builder: (_) => ProductDetailPage(productId: product.chassisNumber),  // Truyền product vào ProductDetailPage
-          settings: settings,
-        );
+        final arguments = settings.arguments;
+        if (arguments is Vehicle) {
+          return MaterialPageRoute(
+            builder: (_) => ProductDetailPage(productId: arguments.chassisNumber),
+            settings: settings,
+          );
+        } else {
+          return MaterialPageRoute(
+            builder: (_) => const Scaffold(
+              body: Center(child: Text('Invalid arguments for ProductDetailPage')),
+            ),
+          );
+        }
       case AppRoutesNames.FILTER:
         return MaterialPageRoute(
           builder: (_) => FilterScreen(),
@@ -90,7 +95,7 @@ class AppPages {
         );
       default:
         return MaterialPageRoute(
-          builder: (_) => Welcome(),
+          builder: (_) => Application(),
           settings: settings,
         );
     }

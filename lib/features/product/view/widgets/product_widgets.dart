@@ -73,13 +73,16 @@ Widget categoryFilter({
   required String selectedCategory,
   required Function(String) onCategorySelected,
 }) {
+  // Thêm "Tất cả" vào đầu danh sách danh mục
+  final updatedCategories = ["Tất cả", ...categories];
+
   return SizedBox(
     height: 55.h,
     child: ListView.builder(
       scrollDirection: Axis.horizontal,
-      itemCount: categories.length,
+      itemCount: updatedCategories.length,
       itemBuilder: (context, index) {
-        String category = categories[index];
+        String category = updatedCategories[index];
         return Padding(
           padding: EdgeInsets.only(left: index == 0 ? 16.w : 5.w),
           child: _buildCategoryButton(
@@ -124,19 +127,29 @@ Widget productList({
   required Function(int) onPageChange,
   required WidgetRef ref,
 }) {
-  final productState = ref.watch(productNotifierProvider); // Lấy trạng thái product
+  final productState = ref.watch(productNotifierProvider); // Lấy trạng thái sản phẩm
+
   return productState.when(
     data: (products) {
-      // Hiển thị danh sách sản phẩm sau khi dữ liệu đã tải xong
-      List<Vehicle> filteredProducts = ref.read(productNotifierProvider.notifier).filterByCategory(selectedCategory);
+      // Lọc sản phẩm theo danh mục
+      List<Vehicle> filteredProducts = ref
+          .read(productNotifierProvider.notifier)
+          .filterByCategory(selectedCategory);
+
+      // Kiểm tra nếu danh sách sản phẩm sau khi lọc rỗng
       if (filteredProducts.isEmpty) {
-        return const Center(child: Text("Không có sản phẩm trong danh mục này"));
+        return const Center(
+          child: Text("Không có sản phẩm trong danh mục này"),
+        );
       }
+
       return Column(
         children: [
+          // Hiển thị lưới sản phẩm
           buildProductGrid(filteredProducts, currentPage),
+          // Hiển thị phân trang
           buildPagination(filteredProducts.length, currentPage, (int newPage) {
-            ref.read(productPageProvider.notifier).setPage(newPage); // Cập nhật trang mới
+            onPageChange(newPage); // Gọi callback để chuyển trang
           }),
         ],
       );
@@ -147,7 +160,9 @@ Widget productList({
         color: AppColors.primary,
       ),
     ),
-    error: (error, _) => Center(child: Text('Error: $error')), // Hiển thị khi có lỗi
+    error: (error, _) => Center(
+      child: Text('Error: $error'),
+    ),
   );
 }
 
@@ -266,6 +281,4 @@ Widget productItem({required BuildContext context, required Vehicle product}) {
       ),
     ),
   );
-
-
 }

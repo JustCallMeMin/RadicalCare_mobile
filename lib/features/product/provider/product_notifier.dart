@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:radicalcare/common/api/product_api.dart'; // API để lấy dữ liệu sản phẩm
 import 'package:radicalcare/common/model/vehicle.dart';
 
+import '../../../common/model/category.dart';
 import '../../../common/model/cost_table.dart';
+import '../../../common/utils/secure_storage.dart';
 
 part 'product_notifier.g.dart';
 
@@ -33,56 +35,51 @@ class ProductCategory extends _$ProductCategory {
 @riverpod
 class ProductNotifier extends _$ProductNotifier {
   late List<Vehicle> allProducts;
+  late Map<String, int> categoryMap; // Lưu ánh xạ categoryName -> categoryId
 
   @override
   Future<List<Vehicle>> build() async {
-    return await _fetchAllProducts();
+    await _fetchCategories(); // Lấy danh mục trước
+    return await _fetchAllProducts(); // Lấy sản phẩm
+  }
+
+  // Hàm lấy danh mục và ánh xạ categoryName -> categoryId
+  Future<void> _fetchCategories() async {
+    try {
+      final response = await fetchCategories();
+      if (response["success"] == true) {
+        final List<dynamic> data = response["data"];
+        final List<Category> fetchedCategories =
+        data.map((json) => Category.fromJson(json)).toList();
+
+        // Ánh xạ `categoryName` -> `categoryId`
+        categoryMap = {
+          for (var category in fetchedCategories) category.name: category.id
+        };
+
+        // Không cần `notifyListeners`, trạng thái đã tự động quản lý
+      }
+    } catch (e) {
+      print("Failed to fetch categories: $e");
+    }
   }
 
   // Hàm lấy tất cả sản phẩm từ API
   Future<List<Vehicle>> _fetchAllProducts() async {
-    allProducts = await fetchVehicles(); // Gọi API để lấy sản phẩm
+    allProducts = await fetchVehicles();
     return allProducts;
   }
 
   // Lọc sản phẩm theo danh mục
-  List<Vehicle> filterByCategory(String category) {
-    if (category == "Tất cả") {
-      return allProducts;
-    } else {
-      int selectedCategoryId = _getCategoryIdByName(category);
-      return allProducts
-          .where((product) => product.categoryId == selectedCategoryId)
-          .toList();
+  List<Vehicle> filterByCategory(String categoryName) {
+    // Lấy ID của danh mục từ `categoryMap`
+    final int? categoryId = categoryMap[categoryName];
+    if (categoryId == null) {
+      return allProducts; // Nếu danh mục không hợp lệ, trả về tất cả sản phẩm
     }
-  }
 
-  // Lấy ID danh mục dựa trên tên danh mục
-  int _getCategoryIdByName(String categoryName) {
-    switch (categoryName) {
-      case "Xe tay ga":
-        return 1;
-      case "Xe số":
-        return 2;
-      case "Xe côn tay":
-        return 3;
-      case "Xe mô tô phân khối lớn":
-        return 4;
-      case "Xe điện":
-        return 5;
-      case "Xe địa hình":
-        return 6;
-      case "Xe cổ điển":
-        return 7;
-      case "Xe tay côn phân khối lớn":
-        return 8;
-      case "Xe thể thao":
-        return 9;
-      case "Xe Touring":
-        return 10;
-      default:
-        return -1;
-    }
+    // Lọc danh sách sản phẩm theo `categoryId`
+    return allProducts.where((product) => product.categoryId == categoryId).toList();
   }
 }
 
@@ -125,33 +122,52 @@ class ImageNotifier extends _$ImageNotifier {
 
 // Notifier cho danh sách yêu thích
 final favoriteNotifierProvider =
-    StateNotifierProvider<FavoriteNotifier, AsyncValue<List<Vehicle>>>((ref) {
+StateNotifierProvider<FavoriteNotifier, AsyncValue<List<Vehicle>>>((ref) {
   return FavoriteNotifier();
 });
 
 class FavoriteNotifier extends StateNotifier<AsyncValue<List<Vehicle>>> {
   FavoriteNotifier() : super(const AsyncValue.loading()) {
-    _loadFavorites();
+    _loadFavorites(); // Tải danh sách yêu thích từ SecureStorage khi khởi tạo
   }
 
+  // Hàm tải danh sách yêu thích từ SecureStorage
   Future<void> _loadFavorites() async {
     try {
-      final favorites =
-          <Vehicle>[]; // Thay thế bằng logic lấy danh sách yêu thích nếu có
+      final favorites = await SecureStorageManager.getFavoriteProducts(); // Lấy dữ liệu từ SecureStorage
       state = AsyncValue.data(favorites);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
   }
 
-  void toggleFavorite(Vehicle vehicle) {
-    state.whenData((favoriteProducts) {
-      final updatedFavorites = favoriteProducts.contains(vehicle)
-          ? favoriteProducts
-              .where((v) => v.chassisNumber != vehicle.chassisNumber)
-              .toList()
-          : [...favoriteProducts, vehicle];
+  // Hàm thêm hoặc xóa sản phẩm khỏi danh sách yêu thích
+  void toggleFavorite(Vehicle vehicle) async {
+    state.whenData((favoriteProducts) async {
+      List<Vehicle> updatedFavorites;
+
+      if (favoriteProducts.any((v) => v.chassisNumber == vehicle.chassisNumber)) {
+        // Nếu sản phẩm đã tồn tại, loại bỏ nó
+        updatedFavorites = favoriteProducts
+            .where((v) => v.chassisNumber != vehicle.chassisNumber)
+            .toList();
+      } else {
+        // Nếu chưa tồn tại, thêm sản phẩm vào danh sách
+        updatedFavorites = [...favoriteProducts, vehicle];
+      }
+
+      // Cập nhật trạng thái
       state = AsyncValue.data(updatedFavorites);
+
+      // Lưu vào SecureStorage
+      await SecureStorageManager.saveFavoriteProducts(updatedFavorites);
     });
   }
+
+  // Hàm xóa toàn bộ danh sách yêu thích
+  Future<void> clearFavorites() async {
+    state = const AsyncValue.data([]); // Xóa trong trạng thái
+    await SecureStorageManager.clearAllData(); // Xóa trong SecureStorage
+  }
 }
+

@@ -54,7 +54,7 @@ class AppPages {
     switch (settings.name) {
       case AppRoutesNames.WELCOME:
         return MaterialPageRoute(
-          builder: (_) => const Application(),
+          builder: (_) => Welcome(),
           settings: settings,
         );
       case AppRoutesNames.SIGN_IN:

@@ -100,6 +100,107 @@ Widget appTextField({
   );
 }
 
+Widget appDatePicker({
+  required BuildContext context,
+  required String label,
+  required String hintText,
+  required TextEditingController controller,
+  required void Function(DateTime selectedDate) onDateSelected,
+  DateTime? initialDate, // Không cần const
+  DateTime? firstDate, // Không cần const
+  DateTime? lastDate, // Không cần const
+}) {
+  return Container(
+    padding: EdgeInsets.only(left: 25.w, right: 25.w),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: AppColors.content,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        SizedBox(height: 5.h),
+        GestureDetector(
+          onTap: () async {
+            // Hiển thị DatePicker
+            DateTime? pickedDate = await showDatePicker(
+              context: context,
+              initialDate: initialDate ?? DateTime.now(), // Sử dụng giá trị mặc định
+              firstDate: firstDate ?? DateTime(1900), // Sử dụng giá trị mặc định
+              lastDate: lastDate ?? DateTime.now(), // Sử dụng giá trị mặc định
+              builder: (context, child) {
+                return Theme(
+                  data: Theme.of(context).copyWith(
+                    colorScheme: ColorScheme.light(
+                      primary: AppColors.primary, // Màu chính
+                      onPrimary: Colors.white, // Màu chữ
+                      onSurface: AppColors.secondary, // Màu nền
+                    ),
+                    textButtonTheme: TextButtonThemeData(
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.primary, // Màu nút
+                      ),
+                    ),
+                  ),
+                  child: child!,
+                );
+              },
+            );
+
+            // Nếu người dùng chọn ngày
+            if (pickedDate != null) {
+              onDateSelected(pickedDate); // Gọi hàm callback
+              controller.text = "${pickedDate.toLocal()}".split(' ')[0]; // Cập nhật TextField
+            }
+          },
+          child: AbsorbPointer(
+            child: TextFormField(
+              controller: controller,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              decoration: InputDecoration(
+                hintText: hintText,
+                hintStyle: const TextStyle(color: AppColors.content),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: AppColors.secondary, width: 1.w),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: AppColors.secondary, width: 1.w),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: AppColors.primary, width: 1.5.w),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.red, width: 1.w),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.red, width: 1.5.w),
+                ),
+                errorStyle: TextStyle(color: Colors.red, fontSize: 12.sp),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Vui lòng chọn ngày sinh';
+                }
+                return null;
+              },
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 Widget appSearchBar({
   required String hintText,
   required Function(String value) onSearch,

@@ -8,4 +8,8 @@ class AppRoutesNames {
   static const FILTER = '/filter';
   static const FAVOR = '/favorite';
   static const PRODUCT_DETAIL = '/product-detail';
+  static const PROFILE = '/profile';
+  static const FORGOT_PASSWORD = '/forgot-password';
+  static const RESET_PASSWORD = '/reset-password';
+
 }

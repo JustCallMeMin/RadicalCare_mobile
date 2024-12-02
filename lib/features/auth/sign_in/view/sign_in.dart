@@ -6,14 +6,15 @@ import 'package:radicalcare/common/utils/colors.dart';
 import 'package:radicalcare/common/utils/images.dart';
 import 'package:radicalcare/common/widgets/button_widgets.dart';
 import 'package:radicalcare/common/widgets/text_widgets.dart';
-import 'package:radicalcare/features/sign_in/provider/sign_in_notifier.dart';
-import 'package:radicalcare/features/sign_in/view/widgets/sign_in_widgets.dart';
+import 'package:radicalcare/features/auth/sign_in/view/widgets/sign_in_widgets.dart';
+
+import '../../../../common/routes/app_routes_name.dart';
+import '../../../../common/utils/secure_storage.dart';
+import '../../../../common/widgets/app_divider.dart';
+import '../../../../common/widgets/app_textfieds.dart';
+import '../provider/sign_in_notifier.dart';
 
 
-import '../../../common/routes/app_routes_name.dart';
-import '../../../common/utils/secure_storage.dart';
-import '../../../common/widgets/app_divider.dart';
-import '../../../common/widgets/app_textfieds.dart';
 
 class SignIn extends ConsumerStatefulWidget {
   const SignIn({Key? key}) : super(key: key);
@@ -63,9 +64,7 @@ class _SignInState extends ConsumerState<SignIn> {
                       text14Normal(text: "Rất vui được gặp lại bạn"),
                     ),
                   ),
-                  SizedBox(
-                    height: 50.h,
-                  ),
+                  SizedBox(height: 38.h),
                   // Email TextField
                   appTextField(
                     text: "Username",
@@ -115,7 +114,14 @@ class _SignInState extends ConsumerState<SignIn> {
                   ),
                   Container(
                     margin: EdgeInsets.only(left: 25.w),
-                    child: textUnderline(text: "Quên mật khẩu?"),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, AppRoutesNames.FORGOT_PASSWORD);
+                      },
+                      child: textUnderline(
+                        text: "Quên mật khẩu?",
+                      ),
+                    ),
                   ),
                   SizedBox(
                     height: 100.h,
@@ -129,7 +135,6 @@ class _SignInState extends ConsumerState<SignIn> {
                           if (token != null) {
                             // Lưu token vào SecureStorage
                             await SecureStorageManager.saveToken(token);
-                            print("SignIn: Token saved successfully. Navigating to Application.");
 
                             // Điều hướng đến Application
                             Navigator.pushReplacementNamed(context, AppRoutesNames.APPLICATION);
@@ -184,7 +189,6 @@ class _SignInState extends ConsumerState<SignIn> {
                   registerPrompt(
                     context: context,
                     func: () {
-                      print("SignIn: Navigating to SignUp.");
                       Navigator.pushNamed(
                           context, AppRoutesNames.SIGN_UP);
                     },

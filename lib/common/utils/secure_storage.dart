@@ -60,7 +60,7 @@ class SecureStorageManager {
     }
   }
 
-  // **Lưu danh sách sản phẩm yêu thích**
+  // Lưu danh sách sản phẩm yêu thích
   static Future<void> saveFavoriteProducts(List<Vehicle> favoriteProducts) async {
     try {
       String jsonData = jsonEncode(favoriteProducts.map((e) => e.toJson()).toList());
@@ -71,7 +71,7 @@ class SecureStorageManager {
     }
   }
 
-  // **Lấy danh sách sản phẩm yêu thích**
+  // Lấy danh sách sản phẩm yêu thích
   static Future<List<Vehicle>> getFavoriteProducts() async {
     try {
       String? jsonData = await readData(favoriteKey);

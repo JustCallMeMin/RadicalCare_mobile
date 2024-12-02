@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:radicalcare/common/utils/images.dart';
 
-import '../../../../common/utils/colors.dart';
-import '../../../../common/widgets/app_textfieds.dart';
-import '../../../../common/widgets/button_widgets.dart';
-import '../../../../common/widgets/text_widgets.dart';
-import '../../../search/view/search.dart';
+import '../../../../../common/utils/colors.dart';
+import '../../../../../common/widgets/app_textfieds.dart';
+import '../../../../../common/widgets/button_widgets.dart';
+import '../../../../../common/widgets/text_widgets.dart';
+import '../../../../search/view/search.dart';
 import '../../provider/home_notifier.dart';
 
 Widget headerSection(BuildContext context, {String imagePath = ""}) {

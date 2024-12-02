@@ -99,6 +99,67 @@ Widget appTextField({
     ),
   );
 }
+Widget appTextFieldForForgotPassword({
+  required void Function(String value) func,
+  required String? Function(String?)? validator,
+}) {
+  return Container(
+    padding: EdgeInsets.only(left: 25.w, right: 25.w),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextFormField(
+          onChanged: func, // Gọi hàm updateEmail từ đây
+          keyboardType: TextInputType.emailAddress,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          decoration: InputDecoration(
+            hintText: "Nhập email của bạn",
+            hintStyle: const TextStyle(color: AppColors.content),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: AppColors.secondary,
+                width: 1.w,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: AppColors.secondary,
+                width: 1.w,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: AppColors.primary,
+                width: 1.5.w,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: Colors.red,
+                width: 1.w,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: Colors.red,
+                width: 1.5.w,
+              ),
+            ),
+            errorStyle: TextStyle(color: Colors.red, fontSize: 12.sp),
+          ),
+          maxLines: 1,
+          autocorrect: false,
+          validator: validator, // Xác thực dữ liệu
+        ),
+      ],
+    ),
+  );
+}
 
 Widget appDatePicker({
   required BuildContext context,

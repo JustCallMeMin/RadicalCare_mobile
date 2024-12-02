@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:radicalcare/common/utils/colors.dart';
 import 'package:radicalcare/features/favorite/view/favorite.dart';
-import 'package:radicalcare/features/home/view/home.dart';
 import 'package:radicalcare/features/product/view/product.dart';
+import 'package:radicalcare/features/profile/view/profile.dart';
+
+import '../../../home/home_page/view/home.dart';
 
 Widget bottomNavigationWidget({
   required int currentIndex,
@@ -104,7 +106,7 @@ Widget appScreens({int index = 0}) {
     const ProductPage(),
     const FavoriteScreen(),
     const Center(child: Text('Giỏ hàng')),
-    const Center(child: Text('Tài khoản')),
+    const ProfilePage()
   ];
 
   return screens[index];

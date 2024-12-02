@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:radicalcare/common/widgets/text_widgets.dart';
 
-import '../../../../common/utils/colors.dart'; // Đường dẫn của text16Normal và textUnderline
+import '../../../../../common/utils/colors.dart';
 
 Widget loginPrompt({
   required BuildContext context,

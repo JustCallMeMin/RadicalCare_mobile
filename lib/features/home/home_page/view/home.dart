@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:radicalcare/common/widgets/text_widgets.dart';
-import 'package:radicalcare/features/home/view/widgets/home_widget.dart';
+import 'package:radicalcare/features/home/home_page/view/widgets/home_widget.dart';
 
-import '../../../common/utils/colors.dart';
-import '../../../common/utils/images.dart';
+import '../../../../common/utils/colors.dart';
+import '../../../../common/utils/images.dart';
 import '../provider/home_notifier.dart';
 
 class HomePage extends ConsumerStatefulWidget {

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../common/api/auth_service_api.dart';
-import '../../../common/routes/app_routes_name.dart';
+import '../../../../common/api/auth_service_api.dart';
+import '../../../../common/routes/app_routes_name.dart';
+
 
 part 'register_notifier.g.dart';
 

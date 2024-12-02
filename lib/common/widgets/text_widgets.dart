@@ -45,6 +45,16 @@ Widget text22Bold({String text = "", Color color = AppColors.secondary}) {
     ),
   );
 }
+Widget text20Bold({String text = "", Color color = AppColors.secondary}) {
+  return Text(
+    text,
+    textAlign: TextAlign.center,
+    style: GoogleFonts.roboto(
+      textStyle:
+      TextStyle(color: color, fontSize: 20.sp, fontWeight: FontWeight.bold),
+    ),
+  );
+}
 Widget text28Normal({String text = "", Color color = AppColors.content}) {
   return Text(
     text,

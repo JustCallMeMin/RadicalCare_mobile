@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:radicalcare/common/utils/images.dart';
 
-import '../../../../common/utils/colors.dart';
-import '../../../../common/widgets/text_widgets.dart';
+import '../../../../../common/utils/colors.dart';
+import '../../../../../common/widgets/text_widgets.dart';
+
 
 Widget registerPrompt({
   required BuildContext context,

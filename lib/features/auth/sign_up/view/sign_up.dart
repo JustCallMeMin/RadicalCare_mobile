@@ -7,9 +7,9 @@ import 'package:radicalcare/common/utils/images.dart';
 import 'package:radicalcare/common/widgets/app_divider.dart';
 import 'package:radicalcare/common/widgets/button_widgets.dart';
 import 'package:radicalcare/common/widgets/text_widgets.dart';
-import 'package:radicalcare/features/sign_up/view/widgets/sign_up_widgets.dart';
-import '../../../common/routes/app_routes_name.dart';
-import '../../../common/widgets/app_textfieds.dart';
+import 'package:radicalcare/features/auth/sign_up/view/widgets/sign_up_widgets.dart';
+import '../../../../common/routes/app_routes_name.dart';
+import '../../../../common/widgets/app_textfieds.dart';
 import '../provider/register_notifier.dart';
 
 class SignUp extends ConsumerStatefulWidget {

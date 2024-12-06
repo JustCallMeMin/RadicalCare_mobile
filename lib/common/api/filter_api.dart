@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../model/vehicle.dart';
 
-const String baseUrl = 'http://192.168.1.33:8080/api/v1'; // Đặt URL gốc của API
+const String baseUrl = 'http://192.168.2.14:8080/api/v1'; // Đặt URL gốc của API
 
 // Hàm để lấy danh mục
 Future<List<Map<String, dynamic>>> fetchCategoriesWithId() async {

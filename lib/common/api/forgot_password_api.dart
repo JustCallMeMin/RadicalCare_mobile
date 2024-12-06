@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ForgotPasswordApi {
-  static const String baseUrl = 'http://192.168.1.33:8080/api/v1'; // URL của API backend
+  static const String baseUrl = 'http://192.168.2.14:8080/api/v1'; // URL của API backend
 
   // Gửi email để đặt lại mật khẩu
   static Future<String?> sendForgotPasswordEmail(String email) async {

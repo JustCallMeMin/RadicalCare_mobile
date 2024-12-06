@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../model/cost_table.dart';
 import '../model/vehicle.dart';
 
-const String baseUrl = 'http://192.168.1.33:8080/api/v1'; // Base URL của API
+const String baseUrl = 'http://192.168.2.14:8080/api/v1'; // Base URL của API
 
 // Secure Storage for token
 final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();

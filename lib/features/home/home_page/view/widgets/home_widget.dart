@@ -11,9 +11,9 @@ import '../../../../../common/widgets/text_widgets.dart';
 import '../../../../search/view/search.dart';
 import '../../provider/home_notifier.dart';
 
-Widget headerSection(BuildContext context, {String imagePath = ""}) {
+Widget headerSection(BuildContext context, {String imagePath = "", required String fullName}) {
   final TextEditingController searchController = TextEditingController();
-  final FocusNode focusNode = FocusNode(); // Thêm FocusNode
+  final FocusNode focusNode = FocusNode();
 
   return ClipPath(
     clipper: BottomCurveClipper(),
@@ -40,7 +40,7 @@ Widget headerSection(BuildContext context, {String imagePath = ""}) {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      text28Normal(text: "Nguyễn Văn Tèo Em", color: Colors.white),
+                      text28Normal(text: fullName, color: Colors.white),
                     ],
                   ),
                   SizedBox(height: 10.h),
@@ -52,7 +52,7 @@ Widget headerSection(BuildContext context, {String imagePath = ""}) {
                         size: 18.sp,
                       ),
                       SizedBox(width: 5.w),
-                      text16Normal(text: "1234 Lò Lu", color: Colors.white),
+                      text16Normal(text: "address", color: Colors.white),
                     ],
                   ),
                 ],

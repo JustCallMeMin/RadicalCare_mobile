@@ -38,7 +38,7 @@ class ProfilePage extends ConsumerWidget {
                       radius: 50.r,
                       backgroundImage: profileState.imagePath != null
                           ? NetworkImage(profileState.imagePath!)
-                          : const AssetImage("assets/images/default_avatar.png")
+                          : const AssetImage("assets/images/default_user.jpg")
                       as ImageProvider,
                     ),
                     Positioned(

@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../model/vehicle.dart';
 import '../utils/secure_storage.dart';
 
-const String baseUrl = 'http://192.168.1.33:8080/api/v1'; // Base URL của API
+const String baseUrl = 'http://192.168.2.14:8080/api/v1'; // Base URL của API
 
 // Hàm lấy danh sách tìm kiếm gần đây
 Future<List<String>> fetchRecentSearches(String userId) async {

@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthService {
-  static const String _baseUrl = "http://192.168.1.33:8080/api/v1/auth";
+  static const String _baseUrl = "http://192.168.2.14:8080/api/v1/auth";
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   // Đăng nhập và lưu token vào Secure Storage
@@ -15,7 +15,7 @@ class AuthService {
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          "username": email,
+          "username": email, // Giữ nguyên username cho phần đăng nhập
           "password": password,
         }),
       );
@@ -23,6 +23,7 @@ class AuthService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final token = data['token'];
+        final fullName = data['fullName']; // Nhận fullname từ response
 
         // Kiểm tra token trước khi lưu
         if (token == null || token.isEmpty) {
@@ -32,13 +33,14 @@ class AuthService {
           };
         }
 
-        // Lưu token vào Secure Storage
+        // Lưu token và fullname vào Secure Storage
         await _secureStorage.write(key: 'auth_token', value: token);
-        print("Token saved successfully: $token");
+        await _secureStorage.write(key: 'fullName', value: fullName);  // Lưu fullname thay vì username
 
         return {
           "success": true,
           "token": token,
+          "fullname": fullName,  // Trả về fullname
         };
       } else {
         return {

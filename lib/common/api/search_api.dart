@@ -2,16 +2,15 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../model/vehicle.dart';
 import '../utils/secure_storage.dart';
+import 'api_config.dart'; // Token retrieval utility
 
-const String baseUrl = 'http://192.168.1.33:8080/api/v1'; // Base URL của API
-
-// Hàm lấy danh sách tìm kiếm gần đây
+/// Lấy danh sách tìm kiếm gần đây
 Future<List<String>> fetchRecentSearches(String userId) async {
   try {
     final token = await SecureStorageManager.getToken(); // Lấy token từ storage
     if (token == null) throw Exception("Token không tồn tại");
 
-    final uri = Uri.parse('$baseUrl/search/recent?userId=$userId');
+    final uri = Uri.parse('${ApiConfig.baseUrl}/search/recent?userId=$userId');
     final response = await http.get(
       uri,
       headers: {'Authorization': 'Bearer $token'}, // Thêm Authorization header
@@ -30,11 +29,13 @@ Future<List<String>> fetchRecentSearches(String userId) async {
   }
 }
 
-
-// Hàm xóa toàn bộ tìm kiếm gần đây
-Future<void> clearAllRecentSearches(String token) async {
+/// Xóa toàn bộ tìm kiếm gần đây
+Future<void> clearAllRecentSearches(String userId) async {
   try {
-    final uri = Uri.parse('$baseUrl/search/clear/recent');
+    final token = await SecureStorageManager.getToken(); // Lấy token từ storage
+    if (token == null) throw Exception("Token không tồn tại");
+
+    final uri = Uri.parse('${ApiConfig.baseUrl}/search/clear/recent?userId=$userId');
     final response = await http.delete(
       uri,
       headers: {
@@ -50,10 +51,13 @@ Future<void> clearAllRecentSearches(String token) async {
   }
 }
 
-// Hàm để xóa một tìm kiếm gần đây
-Future<void> removeRecentSearch(String token, String keyword) async {
+/// Xóa một tìm kiếm gần đây
+Future<void> removeRecentSearch(String userId, String keyword) async {
   try {
-    final uri = Uri.parse('$baseUrl/search/delete/recent');
+    final token = await SecureStorageManager.getToken(); // Lấy token từ storage
+    if (token == null) throw Exception("Token không tồn tại");
+
+    final uri = Uri.parse('${ApiConfig.baseUrl}/search/delete/recent?userId=$userId');
     final response = await http.delete(
       uri,
       headers: {
@@ -73,10 +77,14 @@ Future<void> removeRecentSearch(String token, String keyword) async {
   }
 }
 
-// Hàm tìm kiếm phương tiện theo từ khóa
-Future<List<Vehicle>> fetchVehiclesByKeyword(String token, String keyword) async {
+/// Tìm kiếm phương tiện theo từ khóa
+Future<List<Vehicle>> fetchVehiclesByKeyword(String keyword, String userId) async {
   try {
-    final uri = Uri.parse('$baseUrl/vehicles/search?keyword=$keyword');
+    final token = await SecureStorageManager.getToken(); // Lấy token từ storage
+    if (token == null) throw Exception("Token không tồn tại");
+
+    final uri = Uri.parse(
+        '${ApiConfig.baseUrl}/vehicles/search?keyword=$keyword&userId=$userId');
     final response = await http.get(
       uri,
       headers: {

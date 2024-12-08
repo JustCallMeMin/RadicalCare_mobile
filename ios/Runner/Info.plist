@@ -14,7 +14,6 @@
        <string>fetch</string>
        <string>remote-notification</string>
     </array>
-    <key>CFBundleURLTypes</key>
     <key>NSUserNotificationUsageDescription</key>
     <string>Ứng dụng này yêu cầu quyền gửi thông báo cho bạn.</string>
 	<key>CFBundleDisplayName</key>

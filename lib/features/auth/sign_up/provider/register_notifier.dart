@@ -4,7 +4,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../common/api/auth_service_api.dart';
 import '../../../../common/routes/app_routes_name.dart';
 
-
 part 'register_notifier.g.dart';
 
 @riverpod
@@ -21,6 +20,7 @@ class RegisterNotifier extends _$RegisterNotifier {
       confirmPassword: "",
       address: "",
       doB: "",
+      phoneNumber: "", // Thêm phoneNumber
       isLoading: false,
     );
   }
@@ -51,6 +51,10 @@ class RegisterNotifier extends _$RegisterNotifier {
 
   void onDoBChange(String value) {
     state = state.copyWith(doB: value);
+  }
+
+  void onPhoneNumberChange(String value) { // Thêm xử lý phoneNumber
+    state = state.copyWith(phoneNumber: value);
   }
 
   String? validateFullName() {
@@ -113,7 +117,18 @@ class RegisterNotifier extends _$RegisterNotifier {
     if (state.doB.isEmpty) {
       return 'Ngày sinh không được để trống';
     }
-    // Bạn có thể thêm logic kiểm tra định dạng ngày tháng ở đây
+    return null;
+  }
+
+  String? validatePhoneNumber() { // Thêm xác thực phoneNumber
+    if (state.phoneNumber.isEmpty) {
+      return 'Số điện thoại không được để trống';
+    }
+    const phonePattern = r'^\+?[0-9]{10,15}$'; // Kiểm tra số điện thoại hợp lệ
+    final regex = RegExp(phonePattern);
+    if (!regex.hasMatch(state.phoneNumber)) {
+      return 'Số điện thoại không hợp lệ';
+    }
     return null;
   }
 
@@ -125,7 +140,8 @@ class RegisterNotifier extends _$RegisterNotifier {
         validatePassword() != null ||
         validateConfirmPassword() != null ||
         validateAddress() != null ||
-        validateDoB() != null) {
+        validateDoB() != null ||
+        validatePhoneNumber() != null) { // Thêm kiểm tra phoneNumber
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Thông tin đăng ký không hợp lệ')),
       );
@@ -142,6 +158,7 @@ class RegisterNotifier extends _$RegisterNotifier {
         password: state.password,
         address: state.address,
         doB: state.doB,
+        phoneNumber: state.phoneNumber, // Thêm phoneNumber vào request
       );
 
       if (response['success']) {
@@ -173,6 +190,7 @@ class RegisterNotifier extends _$RegisterNotifier {
       confirmPassword: "",
       address: "",
       doB: "",
+      phoneNumber: "", // Reset phoneNumber
       isLoading: false,
     );
   }
@@ -186,6 +204,7 @@ class RegisterState {
   final String confirmPassword;
   final String address;
   final String doB;
+  final String phoneNumber; // Thêm phoneNumber
   final bool isLoading;
 
   RegisterState({
@@ -196,6 +215,7 @@ class RegisterState {
     required this.confirmPassword,
     required this.address,
     required this.doB,
+    required this.phoneNumber, // Thêm phoneNumber
     required this.isLoading,
   });
 
@@ -207,6 +227,7 @@ class RegisterState {
     String? confirmPassword,
     String? address,
     String? doB,
+    String? phoneNumber, // Thêm phoneNumber
     bool? isLoading,
   }) {
     return RegisterState(
@@ -217,6 +238,7 @@ class RegisterState {
       confirmPassword: confirmPassword ?? this.confirmPassword,
       address: address ?? this.address,
       doB: doB ?? this.doB,
+      phoneNumber: phoneNumber ?? this.phoneNumber, // Thêm phoneNumber
       isLoading: isLoading ?? this.isLoading,
     );
   }

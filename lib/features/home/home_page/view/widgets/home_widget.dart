@@ -11,83 +11,95 @@ import '../../../../../common/widgets/text_widgets.dart';
 import '../../../../search/view/search.dart';
 import '../../provider/home_notifier.dart';
 
-Widget headerSection(BuildContext context, {String imagePath = ""}) {
+Widget headerSection(
+    BuildContext context, {
+      required String imagePath,
+      required String? fullName,
+    }) {
   final TextEditingController searchController = TextEditingController();
-  final FocusNode focusNode = FocusNode(); // Thêm FocusNode
+  final FocusNode focusNode = FocusNode();
 
   return ClipPath(
     clipper: BottomCurveClipper(),
-    child: Stack(
-      children: [
-        // Ảnh nền của header
-        Container(
-          height: 300.h,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(imagePath),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
-            ),
-            child: Padding(
-              padding: EdgeInsets.only(left: 25.w, right: 25.w, top: 40.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    child: Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage(imagePath),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Container(
+        color: Colors.black.withOpacity(0.5), // Overlay màu đen
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 40.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Hàng chứa tên và avatar
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      text28Normal(text: "Nguyễn Văn Tèo Em", color: Colors.white),
-                    ],
-                  ),
-                  SizedBox(height: 10.h),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on,
+                  Expanded(
+                    child: Text(
+                      fullName ?? "Tên người dùng",
+                      style: TextStyle(
+                        fontSize: 28.sp,
                         color: Colors.white,
-                        size: 18.sp,
+                        fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(width: 5.w),
-                      text16Normal(text: "1234 Lò Lu", color: Colors.white),
-                    ],
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
+                  // SizedBox(width: 10.w),
+                  // CircleAvatar(
+                  //   radius: 25.r,
+                  //   backgroundImage: AssetImage(imagePath),
+                  // ),
                 ],
               ),
-            ),
-          ),
-        ),
-        // Thêm appSearchBar ở dưới cùng
-        Positioned(
-          bottom: 110.h,
-          left: 25.w,
-          right: 25.w,
-          child: appSearchBar(
-            context: context,
-            hintText: "Tìm và đặt dịch vụ tốt nhất",
-            searchController: searchController,
-            focusNode: focusNode, // Gắn FocusNode vào
-            onSearch: (value) {
-              if (value.isNotEmpty) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => SearchPage(keyword: value),
+              SizedBox(height: 10.h), // Khoảng cách giữa tên và địa chỉ
+
+              // Địa chỉ
+              Row(
+                children: [
+                  Icon(
+                    Icons.location_on,
+                    color: Colors.white,
+                    size: 18.sp,
                   ),
-                );
-              }
-            },
-            onClearSearch: () {
-              print("Search bar cleared"); // Debug khi nội dung bị xóa hết
-            },
-            onVoiceSearchTap: () {
-              print("Microphone tapped");
-            },
+                  SizedBox(width: 5.w),
+                  text16Normal(text: "1234 Lò Lu", color: Colors.white),
+                ],
+              ),
+              SizedBox(height: 20.h), // Khoảng cách giữa địa chỉ và thanh tìm kiếm
+
+              // Thanh tìm kiếm
+              appSearchBar(
+                context: context,
+                hintText: "Tìm và đặt dịch vụ tốt nhất",
+                searchController: searchController,
+                focusNode: focusNode,
+                onSearch: (value) {
+                  if (value.isNotEmpty) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => SearchPage(keyword: value),
+                      ),
+                    );
+                  }
+                },
+                onClearSearch: () {
+                  print("Search bar cleared");
+                },
+                onVoiceSearchTap: () {
+                  print("Microphone tapped");
+                },
+              ),
+            ],
           ),
         ),
-      ],
+      ),
     ),
   );
 }

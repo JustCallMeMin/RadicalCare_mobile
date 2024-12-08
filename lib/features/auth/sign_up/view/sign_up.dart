@@ -28,7 +28,7 @@ class _SignUpState extends ConsumerState<SignUp> {
   Widget build(BuildContext context) {
     final registerNotifier = ref.watch(registerNotifierProvider);
     final registerNotifierNotifier =
-        ref.read(registerNotifierProvider.notifier);
+    ref.read(registerNotifierProvider.notifier);
 
     return Container(
       color: AppColors.primaryBg,
@@ -51,7 +51,7 @@ class _SignUpState extends ConsumerState<SignUp> {
                     child: Padding(
                       padding: EdgeInsets.only(left: 25.w, right: 25.w),
                       child:
-                          text14Normal(text: "Bắt đầu tạo tài khoản của bạn"),
+                      text14Normal(text: "Bắt đầu tạo tài khoản của bạn"),
                     ),
                   ),
                   SizedBox(height: 38.h),
@@ -101,7 +101,7 @@ class _SignUpState extends ConsumerState<SignUp> {
                     obscureText: !isPasswordVisible,
                     isPasswordField: true,
                     iconName:
-                        isPasswordVisible ? AppImages.eyeClose : AppImages.eye,
+                    isPasswordVisible ? AppImages.eyeClose : AppImages.eye,
                     onIconTap: () {
                       setState(() {
                         isPasswordVisible = !isPasswordVisible;
@@ -145,6 +145,19 @@ class _SignUpState extends ConsumerState<SignUp> {
                         registerNotifierNotifier.validateAddress(),
                   ),
                   SizedBox(height: 16.h),
+                  // Phone Number TextField
+                  appTextField(
+                    text: "Số điện thoại",
+                    color: AppColors.secondary,
+                    hintText: "Nhập số điện thoại của bạn",
+                    obscureText: false,
+                    isPasswordField: false,
+                    keyboardType: TextInputType.phone,
+                    func: registerNotifierNotifier.onPhoneNumberChange,
+                    validator: (_) =>
+                        registerNotifierNotifier.validatePhoneNumber(),
+                  ),
+                  SizedBox(height: 16.h),
                   // Date of Birth TextField
                   appDatePicker(
                     context: context,
@@ -166,7 +179,7 @@ class _SignUpState extends ConsumerState<SignUp> {
                     child: text14Normal(
                         textAlign: TextAlign.start,
                         text:
-                            "Bằng cách tạo tài khoản, bạn đồng ý với các điều khoản và điều kiện của chúng tôi."),
+                        "Bằng cách tạo tài khoản, bạn đồng ý với các điều khoản và điều kiện của chúng tôi."),
                   ),
                   SizedBox(height: 16.h),
                   Center(
@@ -177,10 +190,10 @@ class _SignUpState extends ConsumerState<SignUp> {
                       func: registerNotifier.isLoading
                           ? null
                           : () {
-                              if (_formKey.currentState!.validate()) {
-                                registerNotifierNotifier.handleSignUp(context);
-                              }
-                            },
+                        if (_formKey.currentState!.validate()) {
+                          registerNotifierNotifier.handleSignUp(context);
+                        }
+                      },
                     ),
                   ),
                   SizedBox(height: 16.h),

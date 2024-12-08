@@ -6,8 +6,11 @@ import 'package:radicalcare/common/routes/routes.dart';
 import 'package:radicalcare/common/utils/app_styles.dart';
 import 'package:radicalcare/common/utils/secure_storage.dart';
 
+import 'common/api/api_config.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await ApiConfig.detectServer();
   runApp(const ProviderScope(child: MyApp()));
 }
 

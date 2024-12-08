@@ -3,8 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../model/cost_table.dart';
 import '../model/vehicle.dart';
-
-const String baseUrl = 'http://192.168.1.33:8080/api/v1'; // Base URL của API
+import 'api_config.dart';
 
 // Secure Storage for token
 final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
@@ -22,7 +21,7 @@ Future<String?> getToken() async {
 
 // Function to fetch categories
 Future<Map<String, dynamic>> fetchCategories() async {
-  final url = Uri.parse("$baseUrl/category");
+  final url = Uri.parse("${ApiConfig.baseUrl}/category");
   final token = await getToken();
 
   if (token == null) {
@@ -72,8 +71,7 @@ String buildQueryString(Map<String, dynamic> params) {
       return '${entry.key}=${(entry.value as List).join(',')}';
     }
     return '${entry.key}=${entry.value}';
-  })
-      .join('&');
+  }).join('&');
 }
 
 // Function to fetch vehicles with filters
@@ -105,7 +103,7 @@ Future<List<Vehicle>> fetchVehicles({
   };
 
   final String queryString = buildQueryString(queryParams);
-  final String apiUrl = '$baseUrl/vehicles?$queryString';
+  final String apiUrl = '${ApiConfig.baseUrl}/vehicles?$queryString';
 
   final token = await getToken();
   if (token == null) throw Exception("User not logged in.");
@@ -132,7 +130,7 @@ Future<List<Vehicle>> fetchVehicles({
 
 // Function to fetch a single vehicle by ID
 Future<Vehicle> fetchVehicleById(String id) async {
-  final String apiUrl = '$baseUrl/vehicle/$id';
+  final String apiUrl = '${ApiConfig.baseUrl}/vehicle/$id';
   final token = await getToken();
 
   if (token == null) throw Exception("User not logged in.");
@@ -157,7 +155,7 @@ Future<Vehicle> fetchVehicleById(String id) async {
 
 // Function to fetch multiple vehicles by IDs
 Future<List<Vehicle>> fetchVehiclesByIds(List<String> ids) async {
-  final String apiUrl = '$baseUrl/vehicles/by-ids';
+  final String apiUrl = '${ApiConfig.baseUrl}/vehicles/by-ids';
   final token = await getToken();
 
   if (token == null) throw Exception("User not logged in.");
@@ -188,7 +186,7 @@ Future<List<Vehicle>> fetchVehiclesByIds(List<String> ids) async {
 
 // Function to fetch cost details by ID
 Future<CostTable> fetchCostById(int id) async {
-  final String apiUrl = '$baseUrl/cost-table/$id';
+  final String apiUrl = '${ApiConfig.baseUrl}/cost-table/$id';
   final token = await getToken();
 
   if (token == null) throw Exception("User not logged in.");

@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'api_config.dart'; // Import ApiConfig
 
 class ForgotPasswordApi {
-  static const String baseUrl = 'http://192.168.1.33:8080/api/v1'; // URL của API backend
-
   // Gửi email để đặt lại mật khẩu
   static Future<String?> sendForgotPasswordEmail(String email) async {
-    final url = Uri.parse('$baseUrl/auth/forgot-password');
+    final url = Uri.parse('${ApiConfig.baseUrl}/auth/forgot-password');
     try {
       final response = await http.post(
         url,
@@ -31,7 +30,7 @@ class ForgotPasswordApi {
 
   // Đặt lại mật khẩu với token
   static Future<String> resetPassword(String token, String newPassword) async {
-    final url = Uri.parse('$baseUrl/auth/reset-password');
+    final url = Uri.parse('${ApiConfig.baseUrl}/auth/reset-password');
 
     try {
       final response = await http.post(
@@ -47,7 +46,8 @@ class ForgotPasswordApi {
         final responseBody = json.decode(response.body);
         return responseBody['message'] ?? "Đặt lại mật khẩu thành công";
       } else {
-        throw Exception("Không thể đặt lại mật khẩu: ${response.body}");
+        final responseBody = jsonDecode(response.body);
+        return responseBody['message'] ?? "Không thể đặt lại mật khẩu.";
       }
     } catch (e) {
       throw Exception("Đã xảy ra lỗi trong quá trình đặt lại mật khẩu: $e");

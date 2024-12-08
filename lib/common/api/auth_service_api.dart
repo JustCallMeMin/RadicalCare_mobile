@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'api_config.dart';
 
 class AuthService {
-  static const String _baseUrl = "http://192.168.1.33:8080/api/v1/auth";
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   // Đăng nhập và lưu token vào Secure Storage
   Future<Map<String, dynamic>> signIn(String email, String password) async {
-    final url = Uri.parse("$_baseUrl/login");
+    final url = Uri.parse("${ApiConfig.baseUrl}/auth/login");
 
     try {
       final response = await http.post(
@@ -62,9 +62,10 @@ class AuthService {
     required String email,
     required String password,
     required String address,
+    required String phoneNumber,
     required String doB,
   }) async {
-    final url = Uri.parse("$_baseUrl/register");
+    final url = Uri.parse("${ApiConfig.baseUrl}/auth/register");
 
     try {
       final response = await http.post(
@@ -76,6 +77,7 @@ class AuthService {
           "email": email,
           "password": password,
           "address": address,
+          "phoneNumber": phoneNumber,
           "doB": doB,
         }),
       );

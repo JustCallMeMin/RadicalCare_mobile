@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:radicalcare/common/model/vehicle.dart';
 import '../../../common/api/filter_api.dart';
+import '../../../common/utils/secure_storage.dart';
 part 'filter_notifier.g.dart';
 
 @riverpod
@@ -11,9 +12,9 @@ class FilterNotifier extends _$FilterNotifier {
   List<Map<String, dynamic>> categories = [];
   List<String> colors = [];
 
-  List<String> selectedSegments = []; // Đổi từ String thành List<String> để hỗ trợ chọn nhiều mục
-  List<String> selectedColors = []; // Đổi từ String thành List<String> để hỗ trợ chọn nhiều mục
-  List<int> selectedCategoryIds = []; // Đổi từ int thành List<int> để hỗ trợ chọn nhiều mục
+  List<String> selectedSegments = [];
+  List<String> selectedColors = [];
+  List<int> selectedCategoryIds = [];
 
   bool? soldValue = null;
   double minPrice = 0;
@@ -28,16 +29,22 @@ class FilterNotifier extends _$FilterNotifier {
   Future<void> _loadFilterOptions() async {
     state = const AsyncLoading();
     try {
-      segments = await fetchSegments();
-      categories = await fetchCategoriesWithId();
-      colors = await fetchColors();
+      final token = await SecureStorageManager.getToken(); // Lấy token từ storage
+      if (token == null) {
+        throw Exception("User not logged in.");
+      }
+
+      // Gọi API để lấy các tùy chọn bộ lọc
+      segments = await fetchSegments(token);
+      categories = await fetchCategoriesWithId(token);
+      colors = await fetchColors(token);
+
       state = const AsyncData(null);
     } catch (error) {
       state = AsyncError(error, StackTrace.current);
     }
   }
 
-  // Cập nhật nhiều mục cho `selectedSegments`
   void toggleSegment(String segment) {
     if (selectedSegments.contains(segment)) {
       selectedSegments.remove(segment);
@@ -47,7 +54,6 @@ class FilterNotifier extends _$FilterNotifier {
     state = AsyncData(state.value);
   }
 
-  // Cập nhật nhiều mục cho `selectedCategoryIds`
   void toggleCategory(int categoryId) {
     if (selectedCategoryIds.contains(categoryId)) {
       selectedCategoryIds.remove(categoryId);
@@ -57,7 +63,6 @@ class FilterNotifier extends _$FilterNotifier {
     state = AsyncData(state.value);
   }
 
-  // Cập nhật nhiều mục cho `selectedColors`
   void toggleColor(String color) {
     if (selectedColors.contains(color)) {
       selectedColors.remove(color);
@@ -81,19 +86,23 @@ class FilterNotifier extends _$FilterNotifier {
   Future<void> applyFilters() async {
     state = const AsyncLoading();
     try {
-      print("Selected Segments: ${selectedSegments}");
-      print("Selected Categories: ${selectedCategoryIds}");
-      print("Selected Colors: ${selectedColors}");
+      final token = await SecureStorageManager.getToken(); // Lấy token từ storage
+      if (token == null) {
+        throw Exception("User not logged in.");
+      }
 
+      // Gọi API áp dụng bộ lọc
       final response = await fetchFilteredVehicles(
-        segments: selectedSegments, // List<String>
-        colors: selectedColors, // List<String>
+        token: token,
+        segments: selectedSegments,
+        colors: selectedColors,
         sold: soldValue,
-        categoryIds: selectedCategoryIds, // List<int>
+        categoryIds: selectedCategoryIds,
         minCost: minPrice,
         maxCost: maxPrice,
       );
 
+      // Chuyển đổi kết quả thành danh sách Vehicle
       filteredVehicles = response.map((json) => Vehicle.fromJson(json)).toList();
       print("Filtered Vehicles: ${filteredVehicles.length}");
       state = AsyncData(filteredVehicles);
@@ -102,7 +111,6 @@ class FilterNotifier extends _$FilterNotifier {
       state = AsyncError(error, StackTrace.current);
     }
   }
-
 
   void resetFilters() {
     selectedSegments.clear();

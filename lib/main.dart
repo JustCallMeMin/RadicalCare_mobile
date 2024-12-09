@@ -1,16 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:radicalcare/common/routes/app_routes_name.dart';
 import 'package:radicalcare/common/routes/routes.dart';
 import 'package:radicalcare/common/utils/app_styles.dart';
 import 'package:radicalcare/common/utils/secure_storage.dart';
 
 import 'common/api/api_config.dart';
+import 'common/api/gps_api.dart';
+import 'common/utils/location.dart';
 
-void main() async {
+void initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await ApiConfig.detectServer();
+
+  // Kiểm tra quyền và yêu cầu nếu cần
+  bool hasPermission = await checkAndRequestPermission();
+  if (!hasPermission) {
+    print("Permission denied or GPS service disabled.");
+    return;
+  }
+
+  // Lấy vị trí GPS thực tế
+  Position? position = await getCurrentLocation();
+  if (position == null) {
+    print("Unable to fetch GPS location.");
+    return;
+  }
+
+  // Lấy thông tin userId từ SecureStorage
+  final userId = await SecureStorageManager.getUserId();
+  if (userId == null) {
+    print("User ID not found in storage.");
+    return;
+  }
+
+  try {
+    // Gửi vị trí GPS đến backend
+    await GpsApi.saveGpsLocation(
+      latitude: position.latitude.toString(),
+      longitude: position.longitude.toString(),
+      userId: userId,
+    );
+    print("GPS location saved successfully.");
+  } catch (e) {
+    print("Failed to save GPS location: $e");
+  }
+}
+
+
+void main() {
+  initializeApp(); // Gọi khi khởi chạy ứng dụng
   runApp(const ProviderScope(child: MyApp()));
 }
 

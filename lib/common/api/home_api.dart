@@ -12,7 +12,7 @@ Future<User> fetchUserInfo() async {
     if (token == null) throw Exception("Token không tồn tại");
 
     // Tạo URI để gọi API
-    final uri = Uri.parse('${ApiConfig.baseUrl}/auth/fetch-user'); // Đảm bảo endpoint đúng
+    final uri = Uri.parse('${baseUrl}/auth/fetch-user'); // Đảm bảo endpoint đúng
     final response = await http.get(
       uri,
       headers: {

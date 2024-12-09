@@ -19,14 +19,15 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   void initState() {
     super.initState();
-    ref.read(homePageIndexProvider.notifier).fetchUserFullName(); // Gọi hàm fetchUserFullName khi HomePage khởi tạo
+    ref.read(homePageIndexProvider.notifier).fetchUserFullNameAndGps(); // Gọi hàm khi khởi tạo Home Page
   }
 
   @override
   Widget build(BuildContext context) {
     final index = ref.watch(homePageIndexProvider);
-    final fullName = ref.watch(homePageIndexProvider.notifier).fullName;
-
+    final notifier = ref.watch(homePageIndexProvider.notifier);
+    final fullName = notifier.fullName;
+    final location = notifier.location;
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: AppColors.primaryBg,
@@ -41,7 +42,8 @@ class _HomePageState extends ConsumerState<HomePage> {
               child: headerSection(
                 context,
                 imagePath: AppImages.homeBanner,
-                fullName: fullName, // Truyền fullname vào header
+                fullName: fullName,
+                location: location, // Truyền dữ liệu vị trí
               ),
             ),
             Column(

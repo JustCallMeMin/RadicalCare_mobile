@@ -4,17 +4,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:radicalcare/common/utils/images.dart';
 
+import '../../../../../common/routes/app_routes_name.dart';
 import '../../../../../common/utils/colors.dart';
 import '../../../../../common/widgets/app_textfieds.dart';
 import '../../../../../common/widgets/button_widgets.dart';
 import '../../../../../common/widgets/text_widgets.dart';
 import '../../../../search/view/search.dart';
+import '../../../booking/provider/booking_notifier.dart';
 import '../../provider/home_notifier.dart';
 
 Widget headerSection(
     BuildContext context, {
       required String imagePath,
       required String? fullName,
+      required String? location, // Thêm vị trí GPS
     }) {
   final TextEditingController searchController = TextEditingController();
   final FocusNode focusNode = FocusNode();
@@ -35,7 +38,7 @@ Widget headerSection(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Hàng chứa tên và avatar
+              // Tên và Avatar
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -51,16 +54,11 @@ Widget headerSection(
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  // SizedBox(width: 10.w),
-                  // CircleAvatar(
-                  //   radius: 25.r,
-                  //   backgroundImage: AssetImage(imagePath),
-                  // ),
                 ],
               ),
               SizedBox(height: 10.h), // Khoảng cách giữa tên và địa chỉ
 
-              // Địa chỉ
+              // Vị trí GPS
               Row(
                 children: [
                   Icon(
@@ -69,7 +67,10 @@ Widget headerSection(
                     size: 18.sp,
                   ),
                   SizedBox(width: 5.w),
-                  text16Normal(text: "1234 Lò Lu", color: Colors.white),
+                  text16Normal(
+                    text: location ?? "Đang tải vị trí...",
+                    color: Colors.white,
+                  ),
                 ],
               ),
               SizedBox(height: 20.h), // Khoảng cách giữa địa chỉ và thanh tìm kiếm
@@ -181,39 +182,64 @@ Widget _categoryCard({
 
 // PageView với Riverpod để theo dõi trạng thái chỉ số
 Widget servicePageView(BuildContext context, WidgetRef ref) {
-  ref.watch(homePageIndexProvider);
-  PageController _pageController = PageController(viewportFraction: 0.85); // Điều chỉnh tràn viền bên phải
+  final motorServicesAsync = ref.watch(motorServicesProvider);
 
-  return Column(
-    children: [
-      SizedBox(
-        height: 360.h,
-          child: PageView(
-            controller: _pageController,
-            onPageChanged: (value) {
-              ref.read(homePageIndexProvider.notifier).changeIndex(value); // Cập nhật chỉ số khi trang thay đổi
-            },
-            children: [
-              _serviceCard(
-                imagePath: AppImages.service1,
-                serviceName: 'Độ Xe Theo Yêu Cầu',
-                onTap: () => print('Hair Cutting tapped'),
-              ),
-              _serviceCard(
-                imagePath: AppImages.service2,
-                serviceName: 'Thay Thế Phụ Tùng Chính Hãng',
-                onTap: () => print('Massage tapped'),
-              ),
-              _serviceCard(
-                imagePath: AppImages.service3,
-                serviceName: 'Bảo Dưỡng Định Kỳ',
-                onTap: () => print('Hair Color tapped'),
-              ),
-            ],
+  return motorServicesAsync.when(
+    data: (services) {
+      // Gắn log để kiểm tra dữ liệu nhận được từ provider
+      // print("Fetched services in servicePageView: $services");
+
+      return Column(
+        children: [
+          SizedBox(
+            height: 360.h,
+            child: PageView.builder(
+              itemCount: services.length,
+              controller: PageController(viewportFraction: 0.85),
+              onPageChanged: (value) {
+                // Gắn log kiểm tra chỉ số trang hiện tại
+                print("Page changed to index: $value");
+                ref.read(homePageIndexProvider.notifier).changeIndex(value); // Cập nhật chỉ số khi trang thay đổi
+              },
+              itemBuilder: (context, index) {
+                final service = services[index];
+
+                // Gắn log kiểm tra service tại mỗi index
+                print("Service at index $index: $service");
+
+                return _serviceCard(
+                  imagePath: service['imagePath'] ?? AppImages.service1, // Đường dẫn hình ảnh từ backend
+                  serviceName: service['serviceName'] ?? "Unknown Service", // Tên dịch vụ từ backend
+                  onTap: () {
+                    // Gắn log khi người dùng bấm vào service card
+                    print("Tapped on service: ${service['serviceName']}");
+
+                    Navigator.of(context).pushNamed(
+                      AppRoutesNames.BOOKING,
+                      arguments: {
+                        'serviceName': service['serviceName'] ?? "Unknown Service",
+                      },
+                    );
+                  },
+                );
+              },
+            ),
           ),
-      ),
-      SizedBox(height: 20.h),
-    ],
+          SizedBox(height: 20.h),
+        ],
+      );
+    },
+    loading: () {
+      print("Services are loading...");
+      return const Center(child: CircularProgressIndicator());
+    },
+    error: (error, stack) {
+      // Gắn log để kiểm tra lỗi nếu có
+      print("Error fetching services: $error");
+      return Center(
+        child: Text("Failed to load services: $error"),
+      );
+    },
   );
 }
 
@@ -238,7 +264,7 @@ Widget _serviceCard({
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15.0),
                 image: DecorationImage(
-                  image: AssetImage(imagePath),
+                  image: AssetImage(imagePath), // Hình ảnh từ backend hoặc mặc định
                   fit: BoxFit.cover,
                 ),
               ),
@@ -268,6 +294,7 @@ Widget _serviceCard({
     ),
   );
 }
+
 // CustomClipper để tạo đường cong dưới cùng của hình ảnh
 class BottomCurveClipper extends CustomClipper<Path> {
   @override

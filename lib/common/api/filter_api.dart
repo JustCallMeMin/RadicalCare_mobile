@@ -5,7 +5,7 @@ import 'api_config.dart';
 
 /// Hàm để lấy danh mục
 Future<List<Map<String, dynamic>>> fetchCategoriesWithId(String token) async {
-  final String apiUrl = '${ApiConfig.baseUrl}/category'; // API endpoint
+  final String apiUrl = '${baseUrl}/category'; // API endpoint
   try {
     final response = await http.get(
       Uri.parse(apiUrl),
@@ -36,7 +36,7 @@ Future<List<Map<String, dynamic>>> fetchCategoriesWithId(String token) async {
 
 /// Hàm để lấy danh sách phân khúc (segments)
 Future<List<String>> fetchSegments(String token) async {
-  final String apiUrl = '${ApiConfig.baseUrl}/filter/segments';
+  final String apiUrl = '${baseUrl}/filter/segments';
   try {
     final response = await http.get(
       Uri.parse(apiUrl),
@@ -59,7 +59,7 @@ Future<List<String>> fetchSegments(String token) async {
 
 /// Hàm để lấy danh sách màu sắc (colors)
 Future<List<String>> fetchColors(String token) async {
-  final String apiUrl = '${ApiConfig.baseUrl}/filter/colors';
+  final String apiUrl = '${baseUrl}/filter/colors';
   try {
     final response = await http.get(
       Uri.parse(apiUrl),
@@ -107,7 +107,7 @@ Future<List<Map<String, dynamic>>> fetchFilteredVehicles({
   addQueryParam('minCost', minCost != null ? [minCost.toString()] : null);
   addQueryParam('maxCost', maxCost != null ? [maxCost.toString()] : null);
 
-  final uri = Uri.parse('${ApiConfig.baseUrl}/filter').replace(queryParameters: queryParams);
+  final uri = Uri.parse('${baseUrl}/filter').replace(queryParameters: queryParams);
 
   print("Request URI: $uri"); // Log để kiểm tra URI
 

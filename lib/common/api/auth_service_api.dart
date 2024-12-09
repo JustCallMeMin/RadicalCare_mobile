@@ -8,7 +8,7 @@ class AuthService {
 
   // Đăng nhập và lưu token vào Secure Storage
   Future<Map<String, dynamic>> signIn(String email, String password) async {
-    final url = Uri.parse("${ApiConfig.baseUrl}/auth/login");
+    final url = Uri.parse("${baseUrl}/auth/login");
 
     try {
       final response = await http.post(
@@ -65,7 +65,7 @@ class AuthService {
     required String phoneNumber,
     required String doB,
   }) async {
-    final url = Uri.parse("${ApiConfig.baseUrl}/auth/register");
+    final url = Uri.parse("${baseUrl}/auth/register");
 
     try {
       final response = await http.post(
@@ -118,4 +118,48 @@ class AuthService {
     print("Retrieved token: $token");
     return token;
   }
+  Future<Map<String, dynamic>> updateProfile({
+    String? fullName,
+    String? email,
+    String? phone,
+    String? address,
+    String? doB,
+  }) async {
+    final url = Uri.parse("${baseUrl}/auth/update-profile");
+
+    try {
+      final token = await getToken();
+      if (token == null) throw Exception("Token missing");
+
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          "fullName": fullName,
+          "email": email,
+          "phone": phone,
+          "address": address,
+          "doB": doB,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return {"success": true};
+      } else {
+        return {
+          "success": false,
+          "message": jsonDecode(response.body)['message'] ?? "Update failed"
+        };
+      }
+    } catch (error) {
+      return {
+        "success": false,
+        "message": "An error occurred: $error",
+      };
+    }
+  }
+
 }

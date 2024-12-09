@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:radicalcare/common/utils/colors.dart';
 import 'package:radicalcare/features/favorite/view/favorite.dart';
 import 'package:radicalcare/features/product/view/product.dart';
-import 'package:radicalcare/features/profile/view/profile.dart';
 
 import '../../../home/home_page/view/home.dart';
+import '../../../home/profile/view/profile.dart';
 
 Widget bottomNavigationWidget({
   required int currentIndex,

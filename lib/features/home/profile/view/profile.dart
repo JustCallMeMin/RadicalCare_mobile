@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:radicalcare/common/utils/colors.dart';
 import 'package:radicalcare/common/widgets/text_widgets.dart';
-import 'package:radicalcare/features/profile/view/widgets/profile_widget.dart';
+import 'package:radicalcare/features/home/profile/view/widgets/profile_widget.dart';
+import '../../../auth/update_profile/view/update_profile.dart';
 import '../provider/profile_notifier.dart';
 
 class ProfilePage extends ConsumerWidget {
@@ -17,12 +18,9 @@ class ProfilePage extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
         title: text20Bold(text: "Profile", color: Colors.black),
         centerTitle: true,
+        automaticallyImplyLeading: false, // Loại bỏ nút back mặc định
       ),
       backgroundColor: Colors.white,
       body: Column(
@@ -80,7 +78,14 @@ class ProfilePage extends ConsumerWidget {
                 profileOption(
                   icon: Icons.person_outline,
                   title: "Your profile",
-                  onTap: () => print("Your profile tapped"),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const UpdateProfilePage(),
+                      ),
+                    );
+                  },
                 ),
                 profileOption(
                   icon: Icons.payment,

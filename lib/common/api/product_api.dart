@@ -21,7 +21,7 @@ Future<String?> getToken() async {
 
 // Function to fetch categories
 Future<Map<String, dynamic>> fetchCategories() async {
-  final url = Uri.parse("${ApiConfig.baseUrl}/category");
+  final url = Uri.parse("${baseUrl}/category");
   final token = await getToken();
 
   if (token == null) {
@@ -103,7 +103,7 @@ Future<List<Vehicle>> fetchVehicles({
   };
 
   final String queryString = buildQueryString(queryParams);
-  final String apiUrl = '${ApiConfig.baseUrl}/vehicles?$queryString';
+  final String apiUrl = '${baseUrl}/vehicles?$queryString';
 
   final token = await getToken();
   if (token == null) throw Exception("User not logged in.");
@@ -130,7 +130,7 @@ Future<List<Vehicle>> fetchVehicles({
 
 // Function to fetch a single vehicle by ID
 Future<Vehicle> fetchVehicleById(String id) async {
-  final String apiUrl = '${ApiConfig.baseUrl}/vehicle/$id';
+  final String apiUrl = '${baseUrl}/vehicle/$id';
   final token = await getToken();
 
   if (token == null) throw Exception("User not logged in.");
@@ -155,7 +155,7 @@ Future<Vehicle> fetchVehicleById(String id) async {
 
 // Function to fetch multiple vehicles by IDs
 Future<List<Vehicle>> fetchVehiclesByIds(List<String> ids) async {
-  final String apiUrl = '${ApiConfig.baseUrl}/vehicles/by-ids';
+  final String apiUrl = '${baseUrl}/vehicles/by-ids';
   final token = await getToken();
 
   if (token == null) throw Exception("User not logged in.");
@@ -186,7 +186,7 @@ Future<List<Vehicle>> fetchVehiclesByIds(List<String> ids) async {
 
 // Function to fetch cost details by ID
 Future<CostTable> fetchCostById(int id) async {
-  final String apiUrl = '${ApiConfig.baseUrl}/cost-table/$id';
+  final String apiUrl = '${baseUrl}/cost-table/$id';
   final token = await getToken();
 
   if (token == null) throw Exception("User not logged in.");

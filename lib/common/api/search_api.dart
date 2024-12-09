@@ -10,7 +10,7 @@ Future<List<String>> fetchRecentSearches(String userId) async {
     final token = await SecureStorageManager.getToken(); // Lấy token từ storage
     if (token == null) throw Exception("Token không tồn tại");
 
-    final uri = Uri.parse('${ApiConfig.baseUrl}/search/recent?userId=$userId');
+    final uri = Uri.parse('${baseUrl}/search/recent?userId=$userId');
     final response = await http.get(
       uri,
       headers: {'Authorization': 'Bearer $token'}, // Thêm Authorization header
@@ -35,7 +35,7 @@ Future<void> clearAllRecentSearches(String userId) async {
     final token = await SecureStorageManager.getToken(); // Lấy token từ storage
     if (token == null) throw Exception("Token không tồn tại");
 
-    final uri = Uri.parse('${ApiConfig.baseUrl}/search/clear/recent?userId=$userId');
+    final uri = Uri.parse('${baseUrl}/search/clear/recent?userId=$userId');
     final response = await http.delete(
       uri,
       headers: {
@@ -57,7 +57,7 @@ Future<void> removeRecentSearch(String userId, String keyword) async {
     final token = await SecureStorageManager.getToken(); // Lấy token từ storage
     if (token == null) throw Exception("Token không tồn tại");
 
-    final uri = Uri.parse('${ApiConfig.baseUrl}/search/delete/recent?userId=$userId');
+    final uri = Uri.parse('${baseUrl}/search/delete/recent?userId=$userId');
     final response = await http.delete(
       uri,
       headers: {
@@ -84,7 +84,7 @@ Future<List<Vehicle>> fetchVehiclesByKeyword(String keyword, String userId) asyn
     if (token == null) throw Exception("Token không tồn tại");
 
     final uri = Uri.parse(
-        '${ApiConfig.baseUrl}/vehicles/search?keyword=$keyword&userId=$userId');
+        '${baseUrl}/vehicles/search?keyword=$keyword&userId=$userId');
     final response = await http.get(
       uri,
       headers: {

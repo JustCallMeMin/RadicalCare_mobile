@@ -11,5 +11,6 @@ class AppRoutesNames {
   static const PROFILE = '/profile';
   static const FORGOT_PASSWORD = '/forgot-password';
   static const RESET_PASSWORD = '/reset-password';
-
+  static const BOOKING = '/booking';
+  static const UPDATE_PROFILE = '/update-profile';
 }

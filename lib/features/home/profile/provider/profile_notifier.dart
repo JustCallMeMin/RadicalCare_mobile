@@ -1,7 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../common/utils/secure_storage.dart';
+import '../../../../common/utils/secure_storage.dart';
+
 
 part 'profile_notifier.g.dart';
 

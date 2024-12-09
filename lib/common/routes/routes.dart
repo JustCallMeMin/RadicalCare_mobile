@@ -2,20 +2,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:radicalcare/features/auth/forgot_password/view/forgot_pasword.dart';
 import 'package:radicalcare/features/auth/reset_password/view/reset_password.dart';
-import 'package:radicalcare/features/profile/view/profile.dart';
 
 import '../../features/application/view/application.dart';
 import '../../features/auth/sign_in/view/sign_in.dart';
 import '../../features/auth/sign_up/view/sign_up.dart';
+import '../../features/auth/update_profile/view/update_profile.dart';
 import '../../features/filter/view/filter.dart';
+import '../../features/home/booking/view/booking.dart';
 import '../../features/home/home_page/view/home.dart';
+import '../../features/home/profile/view/profile.dart';
 import '../../features/product_detail/view/product_detail.dart';
 import '../../features/welcome/welcome.dart';
 import '../model/vehicle.dart';
 import 'app_routes_name.dart';
 
-
 class AppPages {
+  // Khởi tạo danh sách các route
   static List<RouteEntity> routes() {
     return [
       RouteEntity(
@@ -43,16 +45,29 @@ class AppPages {
         page: const ProfilePage(),
       ),
       RouteEntity(
-        path: AppRoutesNames.PRODUCT_DETAIL,
+        path: AppRoutesNames.FILTER,
         page: FilterScreen(),
       ),
       RouteEntity(
+        path: AppRoutesNames.PRODUCT_DETAIL,
+        page: const ProductDetailPage(productId: ""), // Mặc định sản phẩm rỗng
+      ),
+      RouteEntity(
         path: AppRoutesNames.FORGOT_PASSWORD,
-        page: ForgotPasswordPage(),
+        page: const ForgotPasswordPage(),
+      ),
+      RouteEntity(
+        path: AppRoutesNames.BOOKING,
+        page: const Placeholder(),
+      ),
+      RouteEntity(
+        path: AppRoutesNames.UPDATE_PROFILE, // Thêm route mới
+        page: const UpdateProfilePage(),
       ),
     ];
   }
 
+  // Phương thức điều hướng dựa trên `RouteSettings`
   static MaterialPageRoute generateRouteSettings(RouteSettings settings) {
     switch (settings.name) {
       case AppRoutesNames.WELCOME:
@@ -87,7 +102,7 @@ class AppPages {
         );
       case AppRoutesNames.FORGOT_PASSWORD:
         return MaterialPageRoute(
-          builder: (_) => ForgotPasswordPage(),
+          builder: (_) => const ForgotPasswordPage(),
           settings: settings,
         );
       case AppRoutesNames.RESET_PASSWORD:
@@ -100,26 +115,39 @@ class AppPages {
         final arguments = settings.arguments;
         if (arguments is Vehicle) {
           return MaterialPageRoute(
-            builder: (_) => ProductDetailPage(productId: arguments.chassisNumber),
+            builder: (_) =>
+                ProductDetailPage(productId: arguments.chassisNumber),
             settings: settings,
           );
         } else {
           return MaterialPageRoute(
             builder: (_) => const Scaffold(
-              body: Center(child: Text('Invalid arguments for ProductDetailPage')),
+              body: Center(
+                child: Text('Invalid arguments for ProductDetailPage'),
+              ),
             ),
           );
         }
+      case AppRoutesNames.BOOKING:
+        return MaterialPageRoute(
+          builder: (_) => const BookingPage(),
+          settings: settings,
+        );
+      case AppRoutesNames.UPDATE_PROFILE:
+        return MaterialPageRoute(
+          builder: (_) => const UpdateProfilePage(),
+          settings: settings,
+        );
       default:
         return MaterialPageRoute(
-          builder: (_) => Application(),
+          builder: (_) => const Application(),
           settings: settings,
         );
     }
   }
 }
 
-// Lớp RouteEntity giúp quản lý thông tin về mỗi route.
+// Lớp RouteEntity giúp quản lý thông tin về mỗi route
 class RouteEntity {
   final String path;
   final Widget page;

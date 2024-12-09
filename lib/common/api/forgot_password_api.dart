@@ -5,7 +5,7 @@ import 'api_config.dart'; // Import ApiConfig
 class ForgotPasswordApi {
   // Gửi email để đặt lại mật khẩu
   static Future<String?> sendForgotPasswordEmail(String email) async {
-    final url = Uri.parse('${ApiConfig.baseUrl}/auth/forgot-password');
+    final url = Uri.parse('${baseUrl}/auth/forgot-password');
     try {
       final response = await http.post(
         url,
@@ -30,7 +30,7 @@ class ForgotPasswordApi {
 
   // Đặt lại mật khẩu với token
   static Future<String> resetPassword(String token, String newPassword) async {
-    final url = Uri.parse('${ApiConfig.baseUrl}/auth/reset-password');
+    final url = Uri.parse('${baseUrl}/auth/reset-password');
 
     try {
       final response = await http.post(

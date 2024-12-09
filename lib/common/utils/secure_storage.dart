@@ -83,4 +83,34 @@ class SecureStorageManager {
       return [];
     }
   }
+
+  // Giải mã JWT để lấy claim
+  static String? _getClaimFromToken(String token, String claimKey) {
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) {
+        throw Exception('Invalid JWT');
+      }
+      final payload = utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
+      final payloadMap = json.decode(payload);
+      return payloadMap[claimKey] as String?;
+    } catch (e) {
+      print('Error decoding token: $e');
+      return null;
+    }
+  }
+
+  // Lấy userId từ token đã lưu
+  static Future<String?> getUserId() async {
+    final token = await getToken();
+    if (token == null) return null;
+    return _getClaimFromToken(token, 'userId');
+  }
+
+  // Lấy customerId từ token đã lưu
+  static Future<String?> getCustomerId() async {
+    final token = await getToken();
+    if (token == null) return null;
+    return _getClaimFromToken(token, 'customerId');
+  }
 }

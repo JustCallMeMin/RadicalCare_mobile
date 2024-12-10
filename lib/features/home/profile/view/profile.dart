@@ -4,75 +4,74 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:radicalcare/common/utils/colors.dart';
 import 'package:radicalcare/common/widgets/text_widgets.dart';
 import 'package:radicalcare/features/home/profile/view/widgets/profile_widget.dart';
+import '../../../../common/routes/app_routes_name.dart';
 import '../../../auth/update_profile/view/update_profile.dart';
 import '../provider/profile_notifier.dart';
 
-class ProfilePage extends ConsumerWidget {
+class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final profileState = ref.watch(profileNotifierProvider); // Lấy trạng thái từ Notifier
+  ConsumerState<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends ConsumerState<ProfilePage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      ref.read(profileNotifierProvider.notifier).fetchUserProfile();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final profileState = ref.watch(profileNotifierProvider);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: text20Bold(text: "Profile", color: Colors.black),
+        title: text20Bold(text: "Profile", color: AppColors.secondary),
         centerTitle: true,
-        automaticallyImplyLeading: false, // Loại bỏ nút back mặc định
+        automaticallyImplyLeading: false,
       ),
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          // Header
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 20.h),
-            child: Column(
-              children: [
-                Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 50.r,
-                      backgroundImage: profileState.imagePath != null
-                          ? NetworkImage(profileState.imagePath!)
-                          : const AssetImage("assets/images/default_avatar.png")
-                      as ImageProvider,
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: GestureDetector(
-                        onTap: () => print("Edit Profile Picture tapped"),
-                        child: Container(
-                          padding: EdgeInsets.all(6.r),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: AppColors.primary),
-                          ),
-                          child: Icon(
-                            Icons.edit,
-                            size: 16.sp,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10.h),
-                text20Bold(
-                  text: profileState.userName ?? "Default User",
-                  color: Colors.black,
-                ),
-              ],
+      body: profileState.userName == null
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 20.h),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 50.r,
+                    backgroundImage: profileState.imagePath != null
+                        ? NetworkImage(profileState.imagePath!)
+                        : const AssetImage("assets/images/default_avatar.png")
+                    as ImageProvider,
+                  ),
+                  SizedBox(height: 10.h),
+                  text20Bold(
+                    text: profileState.userName ?? "Default User",
+                    color: Colors.black,
+                  ),
+                  SizedBox(height: 5.h),
+                  text14Normal(
+                    text: profileState.email ?? "No Email Provided",
+                    color: Colors.grey,
+                  ),
+                ],
+              ),
             ),
-          ),
 
-          // Danh sách các mục
-          Expanded(
-            child: ListView(
+            // Danh sách các mục
+            ListView(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
               padding: EdgeInsets.symmetric(horizontal: 20.w),
               children: [
                 profileOption(
@@ -82,7 +81,7 @@ class ProfilePage extends ConsumerWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const UpdateProfilePage(),
+                        builder: (_) => UpdateProfilePage(),
                       ),
                     );
                   },
@@ -93,9 +92,12 @@ class ProfilePage extends ConsumerWidget {
                   onTap: () => print("Payment Methods tapped"),
                 ),
                 profileOption(
-                  icon: Icons.shopping_bag_outlined,
+                  icon: Icons.calendar_today_outlined,
                   title: "Phiếu đặt lịch",
-                  onTap: () => print("My Orders tapped"),
+                  onTap: () => Navigator.pushNamed(
+                    context,
+                    AppRoutesNames.APPOINTMENT_LIST,
+                  ),
                 ),
                 profileOption(
                   icon: Icons.settings_outlined,
@@ -117,8 +119,6 @@ class ProfilePage extends ConsumerWidget {
                   title: "Log out",
                   onTap: () async {
                     final notifier = ref.read(profileNotifierProvider.notifier);
-
-                    // Hiển thị hộp thoại xác nhận trước khi đăng xuất
                     final shouldLogout = await showDialog<bool>(
                       context: context,
                       builder: (context) {
@@ -140,25 +140,20 @@ class ProfilePage extends ConsumerWidget {
                     );
 
                     if (shouldLogout == true) {
-                      // Thực hiện logout
                       await notifier.logout();
-
-                      // Kiểm tra trạng thái isLoggedOut
-                      if (ref.read(profileNotifierProvider).isLoggedOut) {
-                        // Điều hướng về màn hình SignIn
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/sign-in', // Route màn hình SignIn
-                              (route) => false, // Xóa toàn bộ stack
-                        );
-                      }
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/sign-in',
+                            (route) => false,
+                      );
                     }
                   },
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
+

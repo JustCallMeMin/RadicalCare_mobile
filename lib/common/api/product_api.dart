@@ -109,21 +109,29 @@ Future<List<Vehicle>> fetchVehicles({
   if (token == null) throw Exception("User not logged in.");
 
   try {
+    print("Fetching vehicles from: $apiUrl"); // Log URL
     final response = await http.get(
       Uri.parse(apiUrl),
       headers: {'Authorization': 'Bearer $token'},
     );
 
+    // Log response status and body
+    print("Response Status: ${response.statusCode}");
+    print("Response Body: ${response.body}");
+
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final List<dynamic> vehiclesData = data['data']; // Assuming API returns data under "data"
 
+      print("Fetched vehicles count: ${vehiclesData.length}"); // Log the number of vehicles returned
       return vehiclesData.map((vehicle) => Vehicle.fromJson(vehicle)).toList();
     } else {
       final errorMessage = jsonDecode(response.body)['message'] ?? 'Unknown error';
+      print("Error fetching vehicles: $errorMessage"); // Log any error message from the API
       throw Exception('Failed to load vehicles. $errorMessage');
     }
   } catch (error) {
+    print("Error fetching vehicles: $error"); // Log the error
     throw Exception('Error fetching vehicles: $error');
   }
 }

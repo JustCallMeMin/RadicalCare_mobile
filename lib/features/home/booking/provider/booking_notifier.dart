@@ -1,7 +1,8 @@
+import 'package:radicalcare/common/model/booking.dart';
+import 'package:radicalcare/common/model/booking_detail.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:radicalcare/common/api/appointment_api.dart';
 import '../../../../common/api/motor_service_api.dart';
-import '../../../../common/model/appointment.dart';
 import '../../../../common/model/appointment_detail.dart';
 import '../../../../common/utils/secure_storage.dart';
 
@@ -10,12 +11,12 @@ part 'booking_notifier.g.dart';
 @riverpod
 class BookingNotifier extends _$BookingNotifier {
   // Bản đồ lưu thông tin chi tiết dịch vụ
-  final Map<int, AppointmentDetail> _serviceDetails = {};
+  final Map<int, BookingDetail> _serviceDetails = {};
   DateTime? _serviceDate;
 
   @override
-  Appointment build() {
-    return Appointment(
+  Booking build() {
+    return Booking(
       customerId: '',
       dateCreated: DateTime.now(),
       serviceIds: [],
@@ -34,7 +35,7 @@ class BookingNotifier extends _$BookingNotifier {
     String? serviceDescription,
     double? cost,
   }) {
-    final updatedDetail = AppointmentDetail(
+    final updatedDetail = BookingDetail(
       serviceId: serviceId,
       serviceDate: serviceDate,  // Gửi DateTime trực tiếp
       serviceDescription: serviceDescription ?? _serviceDetails[serviceId]?.serviceDescription ?? '',
@@ -80,9 +81,9 @@ class BookingNotifier extends _$BookingNotifier {
   }
 
   // Lấy danh sách chi tiết dịch vụ
-  List<AppointmentDetail> get serviceDetails {
+  List<BookingDetail> get serviceDetails {
     return state.serviceIds
-        .map((id) => _serviceDetails[id] ?? AppointmentDetail(
+        .map((id) => _serviceDetails[id] ?? BookingDetail(
       serviceId: id,
       serviceDate: _serviceDate ?? DateTime.now(), // Nếu không có ngày, sử dụng ngày hiện tại
       serviceDescription: '',

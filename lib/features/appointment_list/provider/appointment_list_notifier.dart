@@ -1,6 +1,6 @@
+import 'package:radicalcare/common/model/appointment.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../common/api/appointment_api.dart';
-import '../../../common/model/appointment.dart';
 import '../../../common/model/appointment_detail.dart';
 
 part 'appointment_list_notifier.g.dart';
@@ -14,23 +14,14 @@ class AppointmentListNotifier extends _$AppointmentListNotifier {
 
   Future<List<Appointment>> _fetchAllAppointments() async {
     final response = await AppointmentApi.fetchAllAppointments();
+
     if (response['status'] == 200) {
-      final List<dynamic> data = response['data'];
-      return data.map((json) => Appointment.fromJson(json)).toList();
+      final List<dynamic> data = response['data'] ?? [];
+      final appointments = data.map((json) => Appointment.fromJson(json))
+          .toList();
+      return appointments;
     } else {
       throw Exception('Failed to fetch appointments');
     }
   }
 }
-final appointmentDetailsProvider = FutureProvider.family<List<AppointmentDetail>, String>(
-      (ref, appointmentId) async {
-    final response = await AppointmentApi.fetchAppointmentById(appointmentId);
-    if (response['success'] == true) {
-      return (response['data'] as List<dynamic>)
-          .map((detail) => AppointmentDetail.fromJson(detail))
-          .toList();
-    } else {
-      throw Exception('Failed to load details for appointment $appointmentId');
-    }
-  },
-);

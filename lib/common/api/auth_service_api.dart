@@ -118,13 +118,7 @@ class AuthService {
     print("Retrieved token: $token");
     return token;
   }
-  Future<Map<String, dynamic>> updateProfile({
-    String? fullName,
-    String? email,
-    String? phone,
-    String? address,
-    String? doB,
-  }) async {
+  Future<Map<String, dynamic>> updateProfile(Map<String, dynamic> profileData) async {
     final url = Uri.parse("${baseUrl}/auth/update-profile");
 
     try {
@@ -137,13 +131,7 @@ class AuthService {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({
-          "fullName": fullName,
-          "email": email,
-          "phone": phone,
-          "address": address,
-          "doB": doB,
-        }),
+        body: jsonEncode(profileData), // Sử dụng profileData đã qua xử lý
       );
 
       if (response.statusCode == 200) {
@@ -161,5 +149,40 @@ class AuthService {
       };
     }
   }
+  // Lấy thông tin người dùng
+  Future<Map<String, dynamic>> fetchUser() async {
+    final url = Uri.parse("${baseUrl}/auth/fetch-user");
 
+    try {
+      final token = await getToken();
+      if (token == null) throw Exception("Token is missing");
+
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return {
+          "success": true,
+          "username": data["username"],
+          "email": data["email"],
+        };
+      } else {
+        return {
+          "success": false,
+          "message": jsonDecode(response.body)['message'] ?? "Failed to fetch user"
+        };
+      }
+    } catch (error) {
+      return {
+        "success": false,
+        "message": "An error occurred: $error",
+      };
+    }
+  }
 }

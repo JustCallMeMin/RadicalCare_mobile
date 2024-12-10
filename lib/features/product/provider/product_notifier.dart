@@ -12,8 +12,7 @@ part 'product_notifier.g.dart';
 // Provider để lấy baseCost từ CostTable dựa trên costId
 final baseCostProvider =
     FutureProvider.family<double, int>((ref, costId) async {
-  // Thay thế với API thực tế hoặc nguồn dữ liệu khác cho CostTable
-  final response = await fetchCostById(costId); // Implement API call
+  final response = await fetchCostById(costId); // Thực hiện API call
   return response.baseCost ?? 0.0;
 });
 
@@ -37,49 +36,71 @@ class ProductNotifier extends _$ProductNotifier {
   late List<Vehicle> allProducts;
   late Map<String, int> categoryMap; // Lưu ánh xạ categoryName -> categoryId
 
+  // Khởi tạo và lấy sản phẩm cho trang đầu tiên
   @override
-  Future<List<Vehicle>> build() async {
-    await _fetchCategories(); // Lấy danh mục trước
-    return await _fetchAllProducts(); // Lấy sản phẩm
+  Future<AsyncValue<List<Vehicle>>> build() async {
+    await _fetchCategories();
+    return await _fetchProducts(0, 10); // Lấy sản phẩm cho trang đầu tiên
   }
 
-  // Hàm lấy danh mục và ánh xạ categoryName -> categoryId
+  // Lấy danh mục và ánh xạ categoryName -> categoryId
   Future<void> _fetchCategories() async {
     try {
       final response = await fetchCategories();
       if (response["success"] == true) {
         final List<dynamic> data = response["data"];
         final List<Category> fetchedCategories =
-        data.map((json) => Category.fromJson(json)).toList();
+            data.map((json) => Category.fromJson(json)).toList();
 
-        // Ánh xạ `categoryName` -> `categoryId`
         categoryMap = {
           for (var category in fetchedCategories) category.name: category.id
         };
-
-        // Không cần `notifyListeners`, trạng thái đã tự động quản lý
       }
     } catch (e) {
       print("Failed to fetch categories: $e");
     }
   }
 
-  // Hàm lấy tất cả sản phẩm từ API
-  Future<List<Vehicle>> _fetchAllProducts() async {
-    allProducts = await fetchVehicles();
-    return allProducts;
+  // Lấy sản phẩm cho một trang cụ thể
+  Future<AsyncValue<List<Vehicle>>> _fetchProducts(int page, int size) async {
+    try {
+      final response = await fetchVehicles(page: page, size: size);
+      allProducts = response;
+      return AsyncValue.data(allProducts); // Trả về AsyncValue.data
+    } catch (e, stackTrace) {
+      return AsyncValue.error(
+          e, stackTrace); // Nếu có lỗi, trả về AsyncValue.error
+    }
   }
 
   // Lọc sản phẩm theo danh mục
   List<Vehicle> filterByCategory(String categoryName) {
-    // Lấy ID của danh mục từ `categoryMap`
+    // Lấy ID danh mục từ categoryMap
     final int? categoryId = categoryMap[categoryName];
+
+    // Kiểm tra nếu categoryId có tồn tại
     if (categoryId == null) {
-      return allProducts; // Nếu danh mục không hợp lệ, trả về tất cả sản phẩm
+      // Nếu không có danh mục, trả về tất cả sản phẩm
+      return allProducts;
     }
 
-    // Lọc danh sách sản phẩm theo `categoryId`
+    // Lọc toàn bộ sản phẩm theo categoryId, không phụ thuộc vào phân trang
     return allProducts.where((product) => product.categoryId == categoryId).toList();
+  }
+
+
+  // Lấy sản phẩm cho trang mới
+  Future<void> fetchProductsForPage(int page) async {
+    try {
+      state = const AsyncValue.loading(); // Đảm bảo trạng thái là loading
+      final response = await _fetchProducts(page, 10);
+      print('Fetched products: $response'); // Debug log
+      state = AsyncValue.data(response); // Cập nhật state với dữ liệu
+    } catch (e, stackTrace) {
+      print('Error fetching products: $e'); // Debug log
+      print('StackTrace: $stackTrace'); // Debug log stackTrace
+      state = AsyncValue.error(e, stackTrace); // Truyền cả error và stackTrace
+    }
   }
 }
 
@@ -122,7 +143,7 @@ class ImageNotifier extends _$ImageNotifier {
 
 // Notifier cho danh sách yêu thích
 final favoriteNotifierProvider =
-StateNotifierProvider<FavoriteNotifier, AsyncValue<List<Vehicle>>>((ref) {
+    StateNotifierProvider<FavoriteNotifier, AsyncValue<List<Vehicle>>>((ref) {
   return FavoriteNotifier();
 });
 
@@ -134,7 +155,8 @@ class FavoriteNotifier extends StateNotifier<AsyncValue<List<Vehicle>>> {
   // Hàm tải danh sách yêu thích từ SecureStorage
   Future<void> _loadFavorites() async {
     try {
-      final favorites = await SecureStorageManager.getFavoriteProducts(); // Lấy dữ liệu từ SecureStorage
+      final favorites = await SecureStorageManager
+          .getFavoriteProducts(); // Lấy dữ liệu từ SecureStorage
       state = AsyncValue.data(favorites);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
@@ -146,7 +168,8 @@ class FavoriteNotifier extends StateNotifier<AsyncValue<List<Vehicle>>> {
     state.whenData((favoriteProducts) async {
       List<Vehicle> updatedFavorites;
 
-      if (favoriteProducts.any((v) => v.chassisNumber == vehicle.chassisNumber)) {
+      if (favoriteProducts
+          .any((v) => v.chassisNumber == vehicle.chassisNumber)) {
         // Nếu sản phẩm đã tồn tại, loại bỏ nó
         updatedFavorites = favoriteProducts
             .where((v) => v.chassisNumber != vehicle.chassisNumber)
@@ -170,4 +193,3 @@ class FavoriteNotifier extends StateNotifier<AsyncValue<List<Vehicle>>> {
     await SecureStorageManager.clearAllData(); // Xóa trong SecureStorage
   }
 }
-

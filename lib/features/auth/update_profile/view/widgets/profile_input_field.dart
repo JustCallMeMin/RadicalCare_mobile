@@ -6,6 +6,9 @@ class ProfileInputField extends StatelessWidget {
   final TextInputType keyboardType;
   final Function(String) onChanged;
   final bool obscureText;
+  final String? Function(String?)? validator; // Thêm validator
+  final Color borderColor;
+  final Color labelColor;
 
   const ProfileInputField({
     Key? key,
@@ -13,23 +16,45 @@ class ProfileInputField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     required this.onChanged,
     this.obscureText = false,
+    this.validator,
+    this.borderColor = Colors.grey,
+    this.labelColor = Colors.black,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(bottom: 20.h),
-      child: TextField(
+      child: TextFormField(
+        key: ValueKey(label), // Bảo đảm widget tái tạo đúng khi state thay đổi
         keyboardType: keyboardType,
         obscureText: obscureText,
+        onChanged: (value) {
+          onChanged(value);
+        },
+        autovalidateMode: AutovalidateMode.onUserInteraction, // Kiểm tra lỗi tự động
+        validator: validator, // Truyền validator vào đây
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(
+          labelStyle: TextStyle(color: labelColor),
+          enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.r),
+            borderSide: BorderSide(color: borderColor),
           ),
-          contentPadding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 10.w),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.r),
+            borderSide: BorderSide(color: labelColor),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.r),
+            borderSide: const BorderSide(color: Colors.red, width: 1.5),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.r),
+            borderSide: const BorderSide(color: Colors.red, width: 1.5),
+          ),
+          errorStyle: const TextStyle(color: Colors.red, fontSize: 12),
         ),
-        onChanged: onChanged,
       ),
     );
   }

@@ -6,12 +6,12 @@ part of 'booking_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$bookingNotifierHash() => r'c1a7f55ea99cc6720873a0c5554d1936c1516290';
+String _$bookingNotifierHash() => r'b7e81501091b3aae60657a1a1f2630943109b1c8';
 
 /// See also [BookingNotifier].
 @ProviderFor(BookingNotifier)
 final bookingNotifierProvider =
-    AutoDisposeNotifierProvider<BookingNotifier, Appointment>.internal(
+    AutoDisposeNotifierProvider<BookingNotifier, Booking>.internal(
   BookingNotifier.new,
   name: r'bookingNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -21,6 +21,6 @@ final bookingNotifierProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$BookingNotifier = AutoDisposeNotifier<Appointment>;
+typedef _$BookingNotifier = AutoDisposeNotifier<Booking>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

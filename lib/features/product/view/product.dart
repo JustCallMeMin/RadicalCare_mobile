@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:radicalcare/common/widgets/text_widgets.dart';
 import 'package:radicalcare/features/product/view/widgets/product_widgets.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../../../common/api/product_api.dart';
 import '../../../common/model/category.dart';
 import '../../../common/utils/colors.dart';
@@ -35,9 +35,9 @@ class _ProductPageState extends ConsumerState<ProductPage> {
   void _initializeNotificationPlugin() {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const InitializationSettings initializationSettings =
-    InitializationSettings(android: initializationSettingsAndroid);
+        InitializationSettings(android: initializationSettingsAndroid);
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
@@ -61,7 +61,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
         final List<dynamic> data = response["data"];
         // Chuyển đổi từng phần tử thành đối tượng Category
         final List<Category> fetchedCategories =
-        data.map((json) => Category.fromJson(json)).toList();
+            data.map((json) => Category.fromJson(json)).toList();
 
         setState(() {
           categories = fetchedCategories; // Gán danh sách danh mục đầy đủ
@@ -81,7 +81,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
   // Hiển thị thông báo
   Future<void> showNotification() async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
+        AndroidNotificationDetails(
       'your_channel_id',
       'your_channel_name',
       channelDescription: 'your_channel_description',
@@ -90,7 +90,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
       showWhen: false,
     );
     const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
+        NotificationDetails(android: androidPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
       0,
       'Sản phẩm mới!',
@@ -105,6 +105,8 @@ class _ProductPageState extends ConsumerState<ProductPage> {
         productCategoryProvider); // Lấy selectedCategory từ ProductCategoryNotifier
     final currentPage = ref
         .watch(productPageProvider); // Lấy currentPage từ ProductPageNotifier
+    final productData = ref
+        .watch(productNotifierProvider); // Dữ liệu sản phẩm từ ProductNotifier
 
     return Scaffold(
       backgroundColor: AppColors.primaryBg,
@@ -126,7 +128,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                         size: 24.sp,
                       ),
                       onPressed:
-                      showNotification, // Nhấn vào biểu tượng thông báo
+                          showNotification, // Nhấn vào biểu tượng thông báo
                     ),
                   ],
                 ),
@@ -134,19 +136,22 @@ class _ProductPageState extends ConsumerState<ProductPage> {
               searchBar(context, ref, _searchController),
               if (isLoadingCategories)
                 const Center(
-                  child: CircularProgressIndicator(
-                    backgroundColor: Colors.blue,
-                    color: AppColors.primary,
-                  ),
-                ) // Hiển thị khi đang load danh mục
+                  child: CircularProgressIndicator(),
+                )
               else
                 categoryFilter(
                   categories: categories.map((c) => c.name).toList(),
                   selectedCategory: selectedCategory,
                   onCategorySelected: (category) {
-                    ref.read(productCategoryProvider.notifier).updateCategory(category); // Cập nhật danh mục
-                    ref.read(productNotifierProvider.notifier).filterByCategory(category); // Lọc sản phẩm
-                    ref.read(productPageProvider.notifier).setPage(0); // Reset lại trang
+                    ref
+                        .read(productCategoryProvider.notifier)
+                        .updateCategory(category); // Cập nhật danh mục
+                    ref
+                        .read(productPageProvider.notifier)
+                        .setPage(0); // Reset lại trang
+                    ref
+                        .read(productNotifierProvider.notifier)
+                        .fetchProductsForPage(0); // Tải lại trang đầu tiên
                   },
                 ),
               SizedBox(height: 10.h),
@@ -158,7 +163,13 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                 currentPage: currentPage,
                 selectedCategory: selectedCategory,
                 onPageChange: (newPage) {
-                  ref.read(productPageProvider.notifier).setPage(newPage); // Cập nhật trang mới
+                  ref
+                      .read(productPageProvider.notifier)
+                      .setPage(newPage); // Cập nhật trang mới
+                  ref
+                      .read(productNotifierProvider.notifier)
+                      .fetchProductsForPage(
+                          newPage); // Gọi API lấy sản phẩm mới
                 },
                 ref: ref, // Truyền WidgetRef
               ),

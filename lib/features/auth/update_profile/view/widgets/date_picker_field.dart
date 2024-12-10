@@ -3,41 +3,62 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DatePickerField extends StatelessWidget {
   final String label;
-  final String? selectedDate;
-  final Function(String) onDateSelected;
+  final DateTime? selectedDate;
+  final Function(DateTime?) onDateSelected;
+  final Color borderColor;
+  final Color labelColor;
+  final Color iconColor;
 
   const DatePickerField({
     Key? key,
     required this.label,
     required this.selectedDate,
     required this.onDateSelected,
+    this.borderColor = Colors.grey,
+    this.labelColor = Colors.black,
+    this.iconColor = Colors.black,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        final pickedDate = await showDatePicker(
-          context: context,
-          initialDate: selectedDate != null
-              ? DateTime.parse(selectedDate!)
-              : DateTime.now(),
-          firstDate: DateTime(1900),
-          lastDate: DateTime.now(),
-        );
-        if (pickedDate != null) {
-          onDateSelected(pickedDate.toIso8601String().split('T')[0]);
+        try {
+          final initialDate = selectedDate ?? DateTime.now();
+
+          final pickedDate = await showDatePicker(
+            context: context,
+            initialDate: initialDate,
+            firstDate: DateTime(1900),
+            lastDate: DateTime.now(),
+          );
+
+          onDateSelected(pickedDate);
+        } catch (e) {
+          debugPrint("Error parsing date: $e");
         }
       },
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 10.w),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(10.r),
+      child: TextFormField(
+        enabled: false, // Prevent manual input
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(color: labelColor),
+          suffixIcon: Icon(Icons.calendar_today, color: iconColor),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.r),
+            borderSide: BorderSide(color: borderColor),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.r),
+            borderSide: BorderSide(color: borderColor),
+          ),
         ),
-        child: Text(
-          selectedDate ?? label,
-          style: TextStyle(fontSize: 16.sp, color: Colors.black54),
+        controller: TextEditingController(
+          text: selectedDate != null
+              ? "${selectedDate!.day.toString().padLeft(2, '0')}/"
+              "${selectedDate!.month.toString().padLeft(2, '0')}/"
+              "${selectedDate!.year}"
+              : '',
         ),
       ),
     );

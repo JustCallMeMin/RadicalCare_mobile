@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,7 +8,6 @@ import '../../../../common/routes/app_routes_name.dart';
 import '../../../../common/widgets/app_textfieds.dart';
 import '../../../search/view/search.dart';
 import '../../provider/product_notifier.dart';
-
 
 Widget searchBar(
     BuildContext context,
@@ -73,7 +71,6 @@ Widget categoryFilter({
   required String selectedCategory,
   required Function(String) onCategorySelected,
 }) {
-  // Thêm "Tất cả" vào đầu danh sách danh mục
   final updatedCategories = ["Tất cả", ...categories];
 
   return SizedBox(
@@ -96,7 +93,6 @@ Widget categoryFilter({
   );
 }
 
-// Tạo nút danh mục
 Widget _buildCategoryButton(String title, {required bool isSelected, required VoidCallback onTap}) {
   return GestureDetector(
     onTap: onTap,
@@ -120,7 +116,6 @@ Widget _buildCategoryButton(String title, {required bool isSelected, required Vo
   );
 }
 
-// Danh sách sản phẩm theo danh mục và phân trang
 Widget productList({
   required int currentPage,
   required String selectedCategory,
@@ -131,12 +126,9 @@ Widget productList({
 
   return productState.when(
     data: (products) {
-      // Lọc sản phẩm theo danh mục
-      List<Vehicle> filteredProducts = ref
-          .read(productNotifierProvider.notifier)
-          .filterByCategory(selectedCategory);
+      // Sử dụng ref.watch() để lấy các phương thức của StateNotifier
+      final filteredProducts = ref.read(productNotifierProvider.notifier).filterByCategory(selectedCategory);
 
-      // Kiểm tra nếu danh sách sản phẩm sau khi lọc rỗng
       if (filteredProducts.isEmpty) {
         return const Center(
           child: Text("Không có sản phẩm trong danh mục này"),
@@ -145,9 +137,7 @@ Widget productList({
 
       return Column(
         children: [
-          // Hiển thị lưới sản phẩm
           buildProductGrid(filteredProducts, currentPage),
-          // Hiển thị phân trang
           buildPagination(filteredProducts.length, currentPage, (int newPage) {
             onPageChange(newPage); // Gọi callback để chuyển trang
           }),
@@ -166,14 +156,21 @@ Widget productList({
   );
 }
 
-// Hàm hiển thị GridView sản phẩm
 Widget buildProductGrid(List<Vehicle> products, int currentPage) {
-  int productsPerPage = 6;
+  int productsPerPage = 10;
+  int totalPages = (products.length / productsPerPage).ceil();
+
+  if (currentPage >= totalPages) {
+    currentPage = totalPages - 1;
+  }
+
   int startIndex = currentPage * productsPerPage;
   int endIndex = (startIndex + productsPerPage) > products.length
       ? products.length
       : startIndex + productsPerPage;
+
   List<Vehicle> currentProducts = products.sublist(startIndex, endIndex);
+
   return Padding(
     padding: EdgeInsets.symmetric(horizontal: 16.w),
     child: GridView.builder(
@@ -194,7 +191,6 @@ Widget buildProductGrid(List<Vehicle> products, int currentPage) {
   );
 }
 
-// Hàm tạo thanh điều hướng trang
 Widget buildPagination(int totalProducts, int currentPage, Function(int) onPageChange) {
   int productsPerPage = 6;
   int totalPages = (totalProducts / productsPerPage).ceil();
@@ -223,14 +219,13 @@ Widget buildPagination(int totalProducts, int currentPage, Function(int) onPageC
   );
 }
 
-// Thành phần sản phẩm
 Widget productItem({required BuildContext context, required Vehicle product}) {
   return GestureDetector(
     onTap: () {
       Navigator.pushNamed(
         context,
         AppRoutesNames.PRODUCT_DETAIL,
-        arguments: product, // Truyền đối tượng product qua arguments
+        arguments: product,
       );
     },
     child: Container(

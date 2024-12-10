@@ -25,7 +25,7 @@ class AppointmentApi {
   }
 
   /// Fetch appointment by ID
-  static Future<Map<String, dynamic>> fetchAppointmentById(String id) async {
+  static Future<Map<String, dynamic>> fetchAppointmentById(int id) async {
     final url = Uri.parse('$baseUrl/appointments/$id');
 
     final response = await http.get(
@@ -62,33 +62,6 @@ class AppointmentApi {
     if (response.statusCode != 201) {
       throw Exception(
           'Failed to create appointment: ${response.reasonPhrase} (${response.statusCode})');
-    }
-  }
-
-  /// Create a quick appointment
-  static Future<Map<String, dynamic>> createQuickAppointment({
-    required String customerId,
-    required List<String> serviceIds,
-  }) async {
-    final url = Uri.parse('$baseUrl/appointments/quick-create');
-
-    final response = await http.post(
-      url,
-      headers: {
-        'Authorization': 'Bearer ${await SecureStorageManager.getToken()}',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'customerId': customerId,
-        'serviceIds': serviceIds,
-      }),
-    );
-
-    if (response.statusCode == 201) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception(
-          'Failed to create quick appointment: ${response.reasonPhrase} (${response.statusCode})');
     }
   }
 

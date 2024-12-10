@@ -22,12 +22,12 @@ final productCategoryProvider =
 );
 
 typedef _$ProductCategory = AutoDisposeNotifier<String>;
-String _$productNotifierHash() => r'b660079d2943c142b83199c447794dce238dadba';
+String _$productNotifierHash() => r'e20017139b572b8858a20e5795a996184f813879';
 
 /// See also [ProductNotifier].
 @ProviderFor(ProductNotifier)
-final productNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<ProductNotifier, List<Vehicle>>.internal(
+final productNotifierProvider = AutoDisposeAsyncNotifierProvider<
+    ProductNotifier, AsyncValue<List<Vehicle>>>.internal(
   ProductNotifier.new,
   name: r'productNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -37,7 +37,7 @@ final productNotifierProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$ProductNotifier = AutoDisposeAsyncNotifier<List<Vehicle>>;
+typedef _$ProductNotifier = AutoDisposeAsyncNotifier<AsyncValue<List<Vehicle>>>;
 String _$productPageHash() => r'a17f55c4f5d3fdd7d2564d4f621bbc04394a42e0';
 
 /// See also [ProductPage].

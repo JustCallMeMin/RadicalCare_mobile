@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../common/model/appointment.dart';
+import 'package:radicalcare/common/model/appointment.dart';
+import '../../../../../common/model/booking.dart';
 import '../../../../../common/model/appointment_detail.dart';
 import 'appointment_details.dart';
 

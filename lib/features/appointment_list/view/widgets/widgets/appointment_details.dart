@@ -23,28 +23,51 @@ class AppointmentDetails extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Date Created: ${dateCreated.toLocal().toString().split(' ')[0]}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Text('Status: $status'),
-            Text('Customer ID: $customerId'),
-            const SizedBox(height: 16),
-            const Text(
-              'Services:',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            ...details.map((AppointmentDetail detail) {
-              return ListTile(
-                title: Text(detail.serviceDescription),
-                subtitle: Text('Service Date: ${detail.serviceDate}'),
-                trailing: Text('\$${detail.cost.toStringAsFixed(2)}'),
-              );
-            }).toList(),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Date Created: ${dateCreated.toLocal().toString().split(' ')[0]}',
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              Text('Status: $status', style: const TextStyle(fontSize: 14)),
+              Text('Customer ID: $customerId', style: const TextStyle(fontSize: 14)),
+              const SizedBox(height: 16),
+              const Text(
+                'Services:',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: details.length,
+                itemBuilder: (context, index) {
+                  final detail = details[index];
+                  return Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: ListTile(
+                      title: Text(
+                        detail.serviceName,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        'Description: ${detail.serviceDescription}\n'
+                            'Service Date: ${detail.serviceDate.toLocal()}',
+                      ),
+                      trailing: Text(
+                        '\$${detail.serviceCost.toStringAsFixed(2)}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

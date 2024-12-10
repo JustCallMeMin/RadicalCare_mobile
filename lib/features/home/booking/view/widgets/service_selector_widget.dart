@@ -10,7 +10,6 @@ class ServiceSelectorWidget extends ConsumerStatefulWidget {
 }
 
 class _ServiceSelectorWidgetState extends ConsumerState<ServiceSelectorWidget> {
-  // Giá trị được chọn trong dropdown
   int? selectedServiceId;
 
   @override
@@ -23,7 +22,7 @@ class _ServiceSelectorWidgetState extends ConsumerState<ServiceSelectorWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             DropdownButtonFormField<int>(
-              value: selectedServiceId, // Đảm bảo `value` có giá trị trong `items`
+              value: selectedServiceId,
               items: services.map<DropdownMenuItem<int>>((service) {
                 return DropdownMenuItem<int>(
                   value: service['serviceId'],
@@ -39,14 +38,18 @@ class _ServiceSelectorWidgetState extends ConsumerState<ServiceSelectorWidget> {
               onChanged: (selectedId) {
                 if (selectedId != null) {
                   setState(() {
-                    selectedServiceId = selectedId; // Cập nhật `value` được chọn
-                    ref.read(bookingNotifierProvider.notifier).addServiceId(selectedId);
+                    selectedServiceId = selectedId;
+                    ref.read(bookingNotifierProvider.notifier).addOrUpdateServiceDetail(
+                      serviceId: selectedId,
+                      serviceDate: DateTime.now(),
+                      serviceDescription: services.firstWhere((s) => s['serviceId'] == selectedId)['serviceDescription'],
+                      cost: 100.0, // Thay bằng giá thực tế từ backend
+                    );
                   });
                 }
               },
             ),
-            SizedBox(height: 10),
-            // Hiển thị danh sách các dịch vụ đã chọn
+            const SizedBox(height: 10),
             Wrap(
               spacing: 8.0,
               children: ref.watch(bookingNotifierProvider).serviceIds.map((serviceId) {
@@ -54,12 +57,7 @@ class _ServiceSelectorWidgetState extends ConsumerState<ServiceSelectorWidget> {
                 return Chip(
                   label: Text(service['serviceName'] ?? "Unknown"),
                   onDeleted: () {
-                    setState(() {
-                      ref.read(bookingNotifierProvider.notifier).removeServiceId(serviceId);
-                      if (selectedServiceId == serviceId) {
-                        selectedServiceId = null; // Xóa giá trị nếu khớp với `value`
-                      }
-                    });
+                    ref.read(bookingNotifierProvider.notifier).removeServiceDetail(serviceId);
                   },
                 );
               }).toList(),

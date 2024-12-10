@@ -10,18 +10,19 @@ class BookingPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final booking = ref.watch(bookingNotifierProvider);
+    final bookingNotifier = ref.read(bookingNotifierProvider.notifier);
+    final selectedDate = ref.watch(bookingNotifierProvider.select((state) => state.dateCreated));
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
           "Đặt lịch",
-          style: TextStyle(color: Colors.black), // Màu chữ trên app bar
+          style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black), // Màu icon trở về
-        elevation: 0, // Loại bỏ đổ bóng
+        iconTheme: const IconThemeData(color: Colors.black),
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.w),
@@ -51,7 +52,7 @@ class BookingPage extends ConsumerWidget {
                       style: TextStyle(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.primary, // Màu chữ đồng nhất với nút
+                        color: AppColors.primary,
                       ),
                     ),
                     SizedBox(height: 10.h),
@@ -59,12 +60,13 @@ class BookingPage extends ConsumerWidget {
                       onTap: () async {
                         final pickedDate = await showDatePicker(
                           context: context,
-                          initialDate: booking.date,
+                          initialDate: selectedDate ?? DateTime.now(),
                           firstDate: DateTime.now(),
                           lastDate: DateTime(2100),
                         );
                         if (pickedDate != null) {
-                          ref.read(bookingNotifierProvider.notifier).updateDate(pickedDate);
+                          bookingNotifier.updateDateCreated(pickedDate); // Update selected date
+                          bookingNotifier.updateServiceDateForAll(pickedDate); // Update service dates
                         }
                       },
                       child: Container(
@@ -74,7 +76,9 @@ class BookingPage extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Text(
-                          booking.date.toLocal().toString().split(' ')[0],
+                          selectedDate != null
+                              ? selectedDate.toLocal().toString().split(' ')[0]  // Hiển thị ngày đúng
+                              : 'Chọn ngày',
                           style: TextStyle(fontSize: 16.sp, color: Colors.black),
                         ),
                       ),
@@ -105,7 +109,7 @@ class BookingPage extends ConsumerWidget {
                       ),
                     ),
                     SizedBox(height: 10.h),
-                    const ServiceSelectorWidget(), // Widget được tách riêng
+                    const ServiceSelectorWidget(),
                   ],
                 ),
               ),
@@ -117,7 +121,7 @@ class BookingPage extends ConsumerWidget {
               child: ElevatedButton(
                 onPressed: () async {
                   try {
-                    await ref.read(bookingNotifierProvider.notifier).submitBooking();
+                    await bookingNotifier.submitBooking();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Đặt lịch thành công!")),
                     );
@@ -133,7 +137,7 @@ class BookingPage extends ConsumerWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.r),
                   ),
-                  backgroundColor: AppColors.primary, // Màu nền từ AppColors
+                  backgroundColor: AppColors.primary,
                 ),
                 child: Text(
                   "Xác nhận đặt lịch",

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:radicalcare/common/utils/images.dart';
+import 'package:radicalcare/common/widgets/image_widgets.dart';
 
+import '../../../../../common/model/appointment_detail.dart';
 import '../../../../../common/routes/app_routes_name.dart';
 import '../../../../../common/utils/colors.dart';
 import '../../../../../common/widgets/app_textfieds.dart';
@@ -105,7 +107,9 @@ Widget headerSection(
   );
 }
 
-Widget topCategories() {
+Widget topCategories(WidgetRef ref) {
+  final motorServicesAsync = ref.watch(motorServicesProvider);
+
   return Padding(
     padding: EdgeInsets.only(left: 0.w),
     child: Column(
@@ -113,47 +117,30 @@ Widget topCategories() {
       children: [
         SizedBox(height: 10.h),
         SizedBox(
-          height: 100.h, // Chiều cao của các thẻ danh mục
-          child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 25.w), // Đảm bảo tràn đều hai bên khi kéo
-            scrollDirection: Axis.horizontal,
-            children: [
-              _categoryCard(
-                imagePath: AppImages.service1,
-                categoryName: "Bảo dưỡng",
-              ),
-              _categoryCard(
-                imagePath: AppImages.service2,
-                categoryName: "Dầu nhớt",
-              ),
-              _categoryCard(
-                imagePath: AppImages.service3,
-                categoryName: "Thay lốp",
-              ),
-              _categoryCard(
-                imagePath: AppImages.service2,
-                categoryName: "Sửa phanh",
-              ),
-              _categoryCard(
-                imagePath: AppImages.service2,
-                categoryName: "Rửa xe",
-              ),
-              _categoryCard(
-                imagePath: AppImages.service3,
-                categoryName: "Vệ sinh",
-              ),
-              _categoryCard(
-                imagePath: AppImages.service2,
-                categoryName: "Kiểm tra",
-              ),
-            ],
+          height: 120.h, // Chiều cao của các thẻ danh mục
+          child: motorServicesAsync.when(
+            data: (services) {
+              return ListView.builder(
+                padding: EdgeInsets.symmetric(horizontal: 25.w),
+                scrollDirection: Axis.horizontal,
+                itemCount: services.length,
+                itemBuilder: (context, index) {
+                  final service = services[index];
+                  return _categoryCard(
+                    imagePath: service['imagePath'] ?? AppImages.service1, // Đường dẫn hình ảnh
+                    categoryName: service['serviceName'], // Tên danh mục
+                  );
+                },
+              );
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, stack) => Center(child: Text('Error: $err')),
           ),
         ),
       ],
     ),
   );
 }
-
 
 // Widget tạo các thẻ danh mục
 Widget _categoryCard({
@@ -174,7 +161,18 @@ Widget _categoryCard({
           ),
         ),
         SizedBox(height: 5.h),
-        text14Normal(text: categoryName),
+        SizedBox(
+          width: 70.h, // Đặt chiều rộng cố định để kiểm soát text wrap
+          child: Text(
+            categoryName,
+            textAlign: TextAlign.center, // Căn giữa
+            style: TextStyle(
+              fontSize: 14.sp,
+              overflow: TextOverflow.ellipsis, // Thêm ... nếu quá dài
+            ),
+            maxLines: 2, // Cho phép xuống dòng tối đa 2 dòng
+          ),
+        ),
       ],
     ),
   );
@@ -186,9 +184,6 @@ Widget servicePageView(BuildContext context, WidgetRef ref) {
 
   return motorServicesAsync.when(
     data: (services) {
-      // Gắn log để kiểm tra dữ liệu nhận được từ provider
-      // print("Fetched services in servicePageView: $services");
-
       return Column(
         children: [
           SizedBox(
@@ -197,27 +192,20 @@ Widget servicePageView(BuildContext context, WidgetRef ref) {
               itemCount: services.length,
               controller: PageController(viewportFraction: 0.85),
               onPageChanged: (value) {
-                // Gắn log kiểm tra chỉ số trang hiện tại
-                print("Page changed to index: $value");
-                ref.read(homePageIndexProvider.notifier).changeIndex(value); // Cập nhật chỉ số khi trang thay đổi
+                ref.read(homePageIndexProvider.notifier).changeIndex(value);
               },
               itemBuilder: (context, index) {
-                final service = services[index];
-
-                // Gắn log kiểm tra service tại mỗi index
-                print("Service at index $index: $service");
+                final service = services[index]; // Đây là Map<String, dynamic>
 
                 return _serviceCard(
-                  imagePath: service['imagePath'] ?? AppImages.service1, // Đường dẫn hình ảnh từ backend
-                  serviceName: service['serviceName'] ?? "Unknown Service", // Tên dịch vụ từ backend
+                  imagePath: AppImages.service1, // Hình ảnh mặc định
+                  serviceName: service['serviceName'] ?? 'Unknown Service',
                   onTap: () {
-                    // Gắn log khi người dùng bấm vào service card
-                    print("Tapped on service: ${service['serviceName']}");
-
                     Navigator.of(context).pushNamed(
                       AppRoutesNames.BOOKING,
                       arguments: {
-                        'serviceName': service['serviceName'] ?? "Unknown Service",
+                        'serviceName': service['serviceName'],
+                        'cost': service['cost'] ?? 0.0,
                       },
                     );
                   },
@@ -229,17 +217,10 @@ Widget servicePageView(BuildContext context, WidgetRef ref) {
         ],
       );
     },
-    loading: () {
-      print("Services are loading...");
-      return const Center(child: CircularProgressIndicator());
-    },
-    error: (error, stack) {
-      // Gắn log để kiểm tra lỗi nếu có
-      print("Error fetching services: $error");
-      return Center(
-        child: Text("Failed to load services: $error"),
-      );
-    },
+    loading: () => const Center(child: CircularProgressIndicator()),
+    error: (error, stack) => Center(
+      child: Text("Failed to load services: $error"),
+    ),
   );
 }
 

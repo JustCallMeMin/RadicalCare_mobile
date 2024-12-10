@@ -77,7 +77,7 @@ class ProfilePage extends ConsumerWidget {
               children: [
                 profileOption(
                   icon: Icons.person_outline,
-                  title: "Your profile",
+                  title: "Thông tin cá nhân",
                   onTap: () {
                     Navigator.push(
                       context,
@@ -94,7 +94,7 @@ class ProfilePage extends ConsumerWidget {
                 ),
                 profileOption(
                   icon: Icons.shopping_bag_outlined,
-                  title: "My Orders",
+                  title: "Phiếu đặt lịch",
                   onTap: () => print("My Orders tapped"),
                 ),
                 profileOption(

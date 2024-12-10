@@ -15,9 +15,10 @@ class UpdateProfilePage extends ConsumerWidget {
     final updateProfileState = ref.watch(updateProfileNotifierProvider);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("Cập nhật thông tin"),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.w),

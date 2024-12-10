@@ -75,7 +75,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
                 SizedBox(height: 10.h),
                 // Phần topCategories sẽ được canh lề đều ở cả hai bên
-                topCategories(),
+                topCategories(ref),
                 SizedBox(height: 10.h),
                 // Phần tiêu đề "Đề xuất"
                 Padding(

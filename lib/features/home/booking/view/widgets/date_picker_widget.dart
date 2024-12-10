@@ -9,10 +9,11 @@ class DatePickerWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bookingNotifier = ref.read(bookingNotifierProvider.notifier);
-    final selectedDate = ref.watch(bookingNotifierProvider).date;
+    final selectedDate = ref.watch(bookingNotifierProvider).dateCreated;
 
     return GestureDetector(
       onTap: () async {
+        // Mở DatePicker và kiểm tra nếu người dùng chọn ngày hợp lệ
         final pickedDate = await showDatePicker(
           context: context,
           initialDate: selectedDate ?? DateTime.now(),
@@ -21,7 +22,8 @@ class DatePickerWidget extends ConsumerWidget {
         );
 
         if (pickedDate != null) {
-          bookingNotifier.updateDate(pickedDate);
+          bookingNotifier.updateDateCreated(pickedDate);
+          bookingNotifier.updateServiceDateForAll(pickedDate); // Cập nhật cho tất cả dịch vụ
         }
       },
       child: Container(
@@ -32,7 +34,7 @@ class DatePickerWidget extends ConsumerWidget {
         ),
         child: Text(
           selectedDate != null
-              ? selectedDate.toLocal().toString().split(' ')[0]
+              ? selectedDate.toLocal().toString().split(' ')[0]  // Hiển thị ngày đúng
               : 'Chọn ngày',
           style: TextStyle(fontSize: 16.sp),
         ),

@@ -9,16 +9,20 @@ class GpsApi {
     required String longitude,
     required String userId,
     String? customerId,
+    required String timestamp, // Thêm timestamp
   }) async {
     final url = Uri.parse("${baseUrl}/gps");
 
+    // Tạo body gửi lên BE
     final body = {
       "latitude": latitude,
       "longitude": longitude,
+      "timestamp": timestamp, // Thêm timestamp vào body
       "user": {"id": userId},
       if (customerId != null) "customer": {"id": customerId},
     };
 
+    // Gửi yêu cầu POST
     final response = await http.post(
       url,
       headers: {

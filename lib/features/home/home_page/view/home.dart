@@ -19,7 +19,12 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   void initState() {
     super.initState();
-    ref.read(homePageIndexProvider.notifier).fetchUserFullNameAndGps(); // Gọi hàm khi khởi tạo Home Page
+    print("[HomePage] Initializing HomePage");
+    ref.read(homePageIndexProvider.notifier).fetchUserFullNameAndGps().then((_) {
+      print("[HomePage] Completed fetchUserFullNameAndGps");
+    }).catchError((error) {
+      print("[HomePage] Error during fetchUserFullNameAndGps: $error");
+    });
   }
 
   @override
@@ -28,6 +33,9 @@ class _HomePageState extends ConsumerState<HomePage> {
     final notifier = ref.watch(homePageIndexProvider.notifier);
     final fullName = notifier.fullName;
     final location = notifier.location;
+
+    print("[HomePage] Building UI with fullName: $fullName, location: $location");
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: AppColors.primaryBg,
@@ -35,7 +43,6 @@ class _HomePageState extends ConsumerState<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Phần header
             SizedBox(
               height: 300.h,
               width: double.infinity,
@@ -43,13 +50,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                 context,
                 imagePath: AppImages.homeBanner,
                 fullName: fullName,
-                location: location, // Truyền dữ liệu vị trí
+                location: location,
               ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Phần tiêu đề và nút "Xem thêm"
                 Padding(
                   padding: EdgeInsets.only(left: 25.w, right: 25.w),
                   child: Row(
@@ -57,7 +63,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     children: [
                       text22Bold(text: "Danh mục dịch vụ"),
                       GestureDetector(
-                        onTap: () => print("Show all tapped"),
+                        onTap: () => print("[HomePage] Show all tapped"),
                         child: Row(
                           children: [
                             text16Normal(
@@ -74,10 +80,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ),
                 ),
                 SizedBox(height: 10.h),
-                // Phần topCategories sẽ được canh lề đều ở cả hai bên
                 topCategories(ref),
                 SizedBox(height: 10.h),
-                // Phần tiêu đề "Đề xuất"
                 Padding(
                   padding: EdgeInsets.only(left: 25.w),
                   child: text22Bold(text: "Đề xuất"),

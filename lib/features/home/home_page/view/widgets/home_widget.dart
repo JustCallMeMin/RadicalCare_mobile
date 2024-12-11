@@ -19,7 +19,7 @@ Widget headerSection(
     BuildContext context, {
       required String imagePath,
       required String? fullName,
-      required String? location, // Thêm vị trí GPS
+      required String? location,
     }) {
   final TextEditingController searchController = TextEditingController();
   final FocusNode focusNode = FocusNode();
@@ -40,7 +40,7 @@ Widget headerSection(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Tên và Avatar
+              // Tên người dùng
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -58,10 +58,11 @@ Widget headerSection(
                   ),
                 ],
               ),
-              SizedBox(height: 10.h), // Khoảng cách giữa tên và địa chỉ
+              SizedBox(height: 10.h),
 
               // Vị trí GPS
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(
                     Icons.location_on,
@@ -69,13 +70,20 @@ Widget headerSection(
                     size: 18.sp,
                   ),
                   SizedBox(width: 5.w),
-                  text16Normal(
-                    text: location ?? "Đang tải vị trí...",
-                    color: Colors.white,
+                  Expanded(
+                    child: Text(
+                      location ?? "Đang tải vị trí...",
+                      style: TextStyle(
+                        fontSize: 14.sp, // Giảm kích thước chữ
+                        color: Colors.white,
+                      ),
+                      maxLines: 2, // Cho phép xuống dòng nếu vị trí dài
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),
-              SizedBox(height: 20.h), // Khoảng cách giữa địa chỉ và thanh tìm kiếm
+              SizedBox(height: 20.h),
 
               // Thanh tìm kiếm
               appSearchBar(

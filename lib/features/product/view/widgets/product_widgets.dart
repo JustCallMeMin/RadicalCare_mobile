@@ -192,7 +192,7 @@ Widget buildProductGrid(List<Vehicle> products, int currentPage) {
 }
 
 Widget buildPagination(int totalProducts, int currentPage, Function(int) onPageChange) {
-  int productsPerPage = 6;
+  int productsPerPage = 10;
   int totalPages = (totalProducts / productsPerPage).ceil();
   return Row(
     mainAxisAlignment: MainAxisAlignment.center,

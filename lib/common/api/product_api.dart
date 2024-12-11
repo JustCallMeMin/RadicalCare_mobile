@@ -62,80 +62,39 @@ Future<Map<String, dynamic>> fetchCategories() async {
   }
 }
 
-// Helper function to build query strings for search parameters
-String buildQueryString(Map<String, dynamic> params) {
-  return params.entries
-      .where((entry) => entry.value != null)
-      .map((entry) {
-    if (entry.value is List) {
-      return '${entry.key}=${(entry.value as List).join(',')}';
-    }
-    return '${entry.key}=${entry.value}';
-  }).join('&');
-}
-
-// Function to fetch vehicles with filters
-Future<List<Vehicle>> fetchVehicles({
-  String? keyword,
-  int page = 0,
-  int size = 10,
-  String sortBy = 'chassisNumber',
-  List<String>? segments,
-  List<String>? colors,
-  bool? sold,
-  List<int>? categoryIds,
-  double? minCost,
-  double? maxCost,
-  String? userId,
-}) async {
-  final queryParams = {
-    'keyword': keyword,
-    'page': page,
-    'size': size,
-    'sortBy': sortBy,
-    'segments': segments,
-    'colors': colors,
-    'sold': sold,
-    'categoryIds': categoryIds,
-    'minCost': minCost,
-    'maxCost': maxCost,
-    'userId': userId,
-  };
-
-  final String queryString = buildQueryString(queryParams);
-  final String apiUrl = '${baseUrl}/vehicles?$queryString';
+// Thêm hàm fetchAllVehicles
+Future<List<Vehicle>> fetchAllVehicles({String sortBy = 'chassisNumber'}) async {
+  final String apiUrl = '${baseUrl}/vehicles/all?sortBy=$sortBy';
 
   final token = await getToken();
   if (token == null) throw Exception("User not logged in.");
 
   try {
-    print("Fetching vehicles from: $apiUrl"); // Log URL
+    print("Fetching all vehicles from: $apiUrl"); // Log URL
     final response = await http.get(
       Uri.parse(apiUrl),
       headers: {'Authorization': 'Bearer $token'},
     );
 
-    // Log response status and body
     print("Response Status: ${response.statusCode}");
     print("Response Body: ${response.body}");
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final List<dynamic> vehiclesData = data['data']; // Assuming API returns data under "data"
+      final List<dynamic> vehiclesData = data['data'];
 
-      print("Fetched vehicles count: ${vehiclesData.length}"); // Log the number of vehicles returned
+      print("Fetched all vehicles count: ${vehiclesData.length}");
       return vehiclesData.map((vehicle) => Vehicle.fromJson(vehicle)).toList();
     } else {
       final errorMessage = jsonDecode(response.body)['message'] ?? 'Unknown error';
-      print("Error fetching vehicles: $errorMessage"); // Log any error message from the API
-      throw Exception('Failed to load vehicles. $errorMessage');
+      print("Error fetching all vehicles: $errorMessage");
+      throw Exception('Failed to load all vehicles. $errorMessage');
     }
   } catch (error) {
-    print("Error fetching vehicles: $error"); // Log the error
-    throw Exception('Error fetching vehicles: $error');
+    print("Error fetching all vehicles: $error");
+    throw Exception('Error fetching all vehicles: $error');
   }
 }
-
 // Function to fetch a single vehicle by ID
 Future<Vehicle> fetchVehicleById(String id) async {
   final String apiUrl = '${baseUrl}/vehicle/$id';

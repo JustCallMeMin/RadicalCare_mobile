@@ -22,116 +22,137 @@ class SearchPage extends ConsumerStatefulWidget {
 class _SearchPageState extends ConsumerState<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   List<String> recentSearches = [];
-  List<Vehicle> searchResults = []; // Kết quả tìm kiếm
-  bool showRecent = true; // Hiển thị RecentSearch mặc định
+  List<Vehicle> searchResults = [];
+  bool showRecent = true;
   final FocusNode _focusNode = FocusNode();
-  String? userId; // Lưu trữ userId từ token
+  String? userId;
 
   @override
   void initState() {
     super.initState();
-    _searchController.text = widget.keyword; // Gán từ khóa ban đầu
-    _initializeUserId(); // Trích xuất userId từ JWT
+    print('initState called for SearchPage'); // Thêm log
+    _searchController.text = widget.keyword;
+    print('Assigned initial keyword: ${widget.keyword}'); // Thêm log
+    _initializeUserId();
     _loadRecentSearches();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      print('Requesting focus on search bar'); // Thêm log
       _focusNode.requestFocus();
     });
   }
 
   Future<void> _initializeUserId() async {
+    print('Initializing userId...'); // Thêm log
     try {
-      print('Initializing userId...');
-      final token = await SecureStorageManager.getToken(); // Lấy JWT từ SecureStorage
-      print('Retrieved token: $token');
+      final token = await SecureStorageManager.getToken();
+      print('Retrieved token in _initializeUserId: $token'); // Thêm log
       if (token != null) {
-        userId = TokenUtils.getUserIdFromToken(token); // Trích xuất userId từ JWT
-        print('Extracted userId: $userId');
+        userId = TokenUtils.getUserIdFromToken(token);
+        print('Extracted userId: $userId'); // Thêm log
         if (userId != null) {
-          await _loadRecentSearches(); // Load danh sách tìm kiếm gần đây
+          await _loadRecentSearches();
+        } else {
+          print('userId is null after extraction'); // Thêm log
         }
       } else {
-        print('No token found.');
+        print('No token found in _initializeUserId'); // Thêm log
       }
     } catch (e) {
-      print('Error initializing userId: $e');
+      print('Error initializing userId: $e'); // Thêm log
     }
+    print('Finished _initializeUserId'); // Thêm log
   }
 
   Future<void> _loadRecentSearches() async {
+    print('Attempting to load recent searches...'); // Thêm log
     if (userId == null) {
-      print('UserId is null, skipping recent searches loading.');
+      print('UserId is null, skipping recent searches loading.'); // Thêm log
       return;
     }
     try {
-      print('Fetching recent searches for userId: $userId');
-      final searches = await fetchRecentSearches(userId!); // Gọi API lấy recent searches
-      print('Fetched recent searches: $searches'); // Kiểm tra dữ liệu trả về
+      print('Fetching recent searches for userId: $userId'); // Thêm log
+      final searches = await fetchRecentSearches(userId!);
+      print('Fetched recent searches: $searches'); // Thêm log
       setState(() {
         recentSearches = searches;
       });
+      print('Updated state with recent searches'); // Thêm log
     } catch (e) {
-      print('Error loading recent searches: $e');
+      print('Error loading recent searches: $e'); // Thêm log
     }
+    print('Finished loading recent searches'); // Thêm log
   }
 
   Future<void> _performSearch(String keyword) async {
-    final token = await SecureStorageManager.getToken(); // Lấy token từ SecureStorage
+    print('Performing search for keyword: $keyword'); // Thêm log
+    final token = await SecureStorageManager.getToken();
+    print('Retrieved token in _performSearch: $token'); // Thêm log
     if (token == null || userId == null) {
-      print('Token or userId is null, skipping search.');
+      print('Token or userId is null, skipping search.'); // Thêm log
       return;
     }
     try {
-      final results = await fetchVehiclesByKeyword(token, keyword); // Gọi API tìm kiếm
+      print('Calling fetchVehiclesByKeyword with keyword: $keyword'); // Thêm log
+      final results = await fetchVehiclesByKeyword(keyword, userId!);
+      print('Fetched search results count: ${results.length}'); // Thêm log
       setState(() {
-        searchResults = results; // Lưu kết quả tìm kiếm
-        showRecent = false; // Chuyển sang hiển thị kết quả tìm kiếm
+        searchResults = results;
+        showRecent = false;
       });
-      print('Search results fetched successfully.');
+      print('Search results updated in state'); // Thêm log
     } catch (e) {
-      print('Error performing search: $e');
+      print('Error performing search: $e'); // Thêm log
     }
+    print('Finished _performSearch'); // Thêm log
   }
 
   Future<void> _clearAllRecentSearches() async {
-    final token = await SecureStorageManager.getToken(); // Lấy token từ SecureStorage
+    print('Clearing all recent searches...'); // Thêm log
+    final token = await SecureStorageManager.getToken();
+    print('Retrieved token in _clearAllRecentSearches: $token'); // Thêm log
     if (token == null) {
-      print('Token is null, skipping clear all recent searches.');
+      print('Token is null, skipping clear all recent searches.'); // Thêm log
       return;
     }
 
     try {
-      print('Clearing all recent searches with token: $token');
-      await clearAllRecentSearches(token); // Gọi API để xóa tất cả
+      print('Calling clearAllRecentSearches API with token: $token'); // Thêm log
+      await clearAllRecentSearches(token);
       setState(() {
         recentSearches.clear();
       });
-      print('Cleared all recent searches.');
+      print('Cleared all recent searches in state'); // Thêm log
     } catch (e) {
-      print('Error clearing recent searches: $e');
+      print('Error clearing recent searches: $e'); // Thêm log
     }
+    print('Finished _clearAllRecentSearches'); // Thêm log
   }
 
   Future<void> _removeRecentSearch(String keyword) async {
-    final token = await SecureStorageManager.getToken(); // Lấy token từ SecureStorage
+    print('Removing recent search: $keyword'); // Thêm log
+    final token = await SecureStorageManager.getToken();
+    print('Retrieved token in _removeRecentSearch: $token'); // Thêm log
     if (token == null) {
-      print('Token is null, skipping remove recent search.');
+      print('Token is null, skipping remove recent search.'); // Thêm log
       return;
     }
 
     try {
-      print('Removing recent search for keyword: $keyword with token: $token');
-      await removeRecentSearch(token, keyword); // Gọi API để xóa một mục
+      print('Calling removeRecentSearch API with keyword: $keyword'); // Thêm log
+      await removeRecentSearch(token, keyword);
       setState(() {
         recentSearches.remove(keyword);
       });
-      print('Removed recent search: $keyword');
+      print('Removed recent search: $keyword from state'); // Thêm log
     } catch (e) {
-      print('Error removing recent search: $e');
+      print('Error removing recent search: $e'); // Thêm log
     }
+    print('Finished _removeRecentSearch'); // Thêm log
   }
 
   @override
   void dispose() {
+    print('dispose called for SearchPage'); // Thêm log
     _searchController.dispose();
     _focusNode.dispose();
     super.dispose();
@@ -139,6 +160,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    print('build called for SearchPage'); // Thêm log
     return Scaffold(
       backgroundColor: AppColors.primaryBg,
       body: SafeArea(
@@ -161,7 +183,10 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       Icons.arrow_back_ios,
                       color: AppColors.primary,
                     ),
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () {
+                      print('Back button pressed, popping SearchPage'); // Thêm log
+                      Navigator.pop(context);
+                    },
                   ),
                 ),
               ],
@@ -172,14 +197,14 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               searchController: _searchController,
               onSearch: _performSearch,
               onTapSearchBar: () async {
-                print('Search bar tapped.');
+                print('Search bar tapped. Reloading recent searches...'); // Thêm log
                 await _loadRecentSearches();
                 setState(() {
                   showRecent = true;
                 });
               },
               onClearSearch: () async {
-                print('Search cleared.');
+                print('Search cleared. Reloading recent searches...'); // Thêm log
                 await _loadRecentSearches();
                 setState(() {
                   showRecent = true;
@@ -189,8 +214,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             ),
             Expanded(
               child: showRecent
-                  ? _buildRecentSearches() // Hiển thị recent searches
-                  : _buildSearchResults(ref), // Hiển thị kết quả tìm kiếm
+                  ? _buildRecentSearches()
+                  : _buildSearchResults(ref),
             ),
           ],
         ),
@@ -199,7 +224,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   }
 
   Widget _buildRecentSearches() {
-    print('Building recent searches UI.');
+    print('Building recent searches UI'); // Thêm log
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Column(
@@ -235,10 +260,13 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   title: Text(search),
                   trailing: IconButton(
                     icon: Icon(Icons.close, color: Colors.grey),
-                    onPressed: () => _removeRecentSearch(search),
+                    onPressed: () {
+                      print('Close button pressed for recent search: $search'); // Thêm log
+                      _removeRecentSearch(search);
+                    },
                   ),
                   onTap: () {
-                    print('Recent search tapped: $search');
+                    print('Recent search tapped: $search'); // Thêm log
                     _performSearch(search);
                     _searchController.text = search;
                   },
@@ -252,7 +280,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   }
 
   Widget _buildSearchResults(WidgetRef ref) {
-    print('Building search results UI.');
+    print('Building search results UI'); // Thêm log
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -276,7 +304,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
           child: productListResult(
             searchResults: searchResults,
             onItemTap: (vehicle) {
-              print('Navigating to ProductDetailPage for: ${vehicle.chassisNumber}');
+              print('Navigating to ProductDetailPage for: ${vehicle.chassisNumber}'); // Thêm log
               Navigator.push(
                 context,
                 MaterialPageRoute(

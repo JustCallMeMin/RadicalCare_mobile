@@ -11,7 +11,7 @@ part 'product_notifier.g.dart';
 
 // Provider để lấy baseCost từ CostTable dựa trên costId
 final baseCostProvider =
-    FutureProvider.family<double, int>((ref, costId) async {
+FutureProvider.family<double, int>((ref, costId) async {
   final response = await fetchCostById(costId); // Thực hiện API call
   return response.baseCost ?? 0.0;
 });
@@ -36,11 +36,12 @@ class ProductNotifier extends _$ProductNotifier {
   late List<Vehicle> allProducts;
   late Map<String, int> categoryMap; // Lưu ánh xạ categoryName -> categoryId
 
-  // Khởi tạo và lấy sản phẩm cho trang đầu tiên
+  // Khởi tạo, lấy categories và toàn bộ dữ liệu xe
   @override
   Future<AsyncValue<List<Vehicle>>> build() async {
     await _fetchCategories();
-    return await _fetchProducts(0, 10); // Lấy sản phẩm cho trang đầu tiên
+    await _fetchAllProducts(); // Lấy toàn bộ xe 1 lần
+    return AsyncValue.data(allProducts); // Trả về toàn bộ dữ liệu
   }
 
   // Lấy danh mục và ánh xạ categoryName -> categoryId
@@ -50,7 +51,7 @@ class ProductNotifier extends _$ProductNotifier {
       if (response["success"] == true) {
         final List<dynamic> data = response["data"];
         final List<Category> fetchedCategories =
-            data.map((json) => Category.fromJson(json)).toList();
+        data.map((json) => Category.fromJson(json)).toList();
 
         categoryMap = {
           for (var category in fetchedCategories) category.name: category.id
@@ -61,46 +62,56 @@ class ProductNotifier extends _$ProductNotifier {
     }
   }
 
-  // Lấy sản phẩm cho một trang cụ thể
-  Future<AsyncValue<List<Vehicle>>> _fetchProducts(int page, int size) async {
+  Future<void> _fetchAllProducts() async {
     try {
-      final response = await fetchVehicles(page: page, size: size);
-      allProducts = response;
-      return AsyncValue.data(allProducts); // Trả về AsyncValue.data
-    } catch (e, stackTrace) {
-      return AsyncValue.error(
-          e, stackTrace); // Nếu có lỗi, trả về AsyncValue.error
+      // Gọi endpoint mới để lấy tất cả vehicles
+      final allProductsResponse = await fetchAllVehicles();
+      allProducts = allProductsResponse; // Lưu tất cả xe vào allProducts
+    } catch (e) {
+      print("Failed to fetch all vehicles: $e");
     }
   }
 
   // Lọc sản phẩm theo danh mục
   List<Vehicle> filterByCategory(String categoryName) {
-    // Lấy ID danh mục từ categoryMap
     final int? categoryId = categoryMap[categoryName];
-
-    // Kiểm tra nếu categoryId có tồn tại
     if (categoryId == null) {
-      // Nếu không có danh mục, trả về tất cả sản phẩm
+      // Category "Tất cả" hoặc không tìm thấy -> trả về toàn bộ
       return allProducts;
     }
-
-    // Lọc toàn bộ sản phẩm theo categoryId, không phụ thuộc vào phân trang
-    return allProducts.where((product) => product.categoryId == categoryId).toList();
+    return allProducts
+        .where((product) => product.categoryId == categoryId)
+        .toList();
   }
 
+  // Lấy danh sách sản phẩm đã lọc theo category và phân trang trên FE
+  List<Vehicle> getPaginatedFilteredProducts(String categoryName, int currentPage, int pageSize) {
+    final filtered = filterByCategory(categoryName);
+    final totalItems = filtered.length;
 
-  // Lấy sản phẩm cho trang mới
-  Future<void> fetchProductsForPage(int page) async {
-    try {
-      state = const AsyncValue.loading(); // Đảm bảo trạng thái là loading
-      final response = await _fetchProducts(page, 10);
-      print('Fetched products: $response'); // Debug log
-      state = AsyncValue.data(response); // Cập nhật state với dữ liệu
-    } catch (e, stackTrace) {
-      print('Error fetching products: $e'); // Debug log
-      print('StackTrace: $stackTrace'); // Debug log stackTrace
-      state = AsyncValue.error(e, stackTrace); // Truyền cả error và stackTrace
+    // Nếu số lượng sản phẩm <= pageSize, không phân trang, trả về toàn bộ
+    if (totalItems <= pageSize) {
+      return filtered;
     }
+
+    // Cần phân trang
+    final totalPages = (totalItems / pageSize).ceil();
+
+    // Đảm bảo currentPage hợp lệ
+    int validPage = currentPage;
+    if (validPage < 0) {
+      validPage = 0;
+    } else if (validPage >= totalPages) {
+      validPage = totalPages - 1;
+    }
+
+    final startIndex = validPage * pageSize;
+    int endIndex = startIndex + pageSize;
+    if (endIndex > totalItems) {
+      endIndex = totalItems;
+    }
+
+    return filtered.sublist(startIndex, endIndex);
   }
 }
 
@@ -143,7 +154,7 @@ class ImageNotifier extends _$ImageNotifier {
 
 // Notifier cho danh sách yêu thích
 final favoriteNotifierProvider =
-    StateNotifierProvider<FavoriteNotifier, AsyncValue<List<Vehicle>>>((ref) {
+StateNotifierProvider<FavoriteNotifier, AsyncValue<List<Vehicle>>>((ref) {
   return FavoriteNotifier();
 });
 
@@ -155,8 +166,7 @@ class FavoriteNotifier extends StateNotifier<AsyncValue<List<Vehicle>>> {
   // Hàm tải danh sách yêu thích từ SecureStorage
   Future<void> _loadFavorites() async {
     try {
-      final favorites = await SecureStorageManager
-          .getFavoriteProducts(); // Lấy dữ liệu từ SecureStorage
+      final favorites = await SecureStorageManager.getFavoriteProducts();
       state = AsyncValue.data(favorites);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
@@ -168,8 +178,7 @@ class FavoriteNotifier extends StateNotifier<AsyncValue<List<Vehicle>>> {
     state.whenData((favoriteProducts) async {
       List<Vehicle> updatedFavorites;
 
-      if (favoriteProducts
-          .any((v) => v.chassisNumber == vehicle.chassisNumber)) {
+      if (favoriteProducts.any((v) => v.chassisNumber == vehicle.chassisNumber)) {
         // Nếu sản phẩm đã tồn tại, loại bỏ nó
         updatedFavorites = favoriteProducts
             .where((v) => v.chassisNumber != vehicle.chassisNumber)

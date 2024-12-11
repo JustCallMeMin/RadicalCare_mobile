@@ -14,7 +14,7 @@ class ProductPage extends ConsumerStatefulWidget {
   const ProductPage({Key? key}) : super(key: key);
 
   @override
-  _ProductPageState createState() => _ProductPageState();
+  ConsumerState<ProductPage> createState() => _ProductPageState();
 }
 
 class _ProductPageState extends ConsumerState<ProductPage> {
@@ -35,9 +35,9 @@ class _ProductPageState extends ConsumerState<ProductPage> {
   void _initializeNotificationPlugin() {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    AndroidInitializationSettings('@mipmap/ic_launcher');
     const InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
+    InitializationSettings(android: initializationSettingsAndroid);
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
@@ -52,16 +52,14 @@ class _ProductPageState extends ConsumerState<ProductPage> {
     }
   }
 
-  // Gọi API để tải danh mục
+  // Gọi API để tải danh mục (ở đây vẫn giữ nếu bạn muốn hiển thị categories từ BE)
   Future<void> _loadCategories() async {
     try {
       final response = await fetchCategories(); // Gọi hàm fetchCategories()
       if (response["success"] == true) {
-        // Lấy danh sách dữ liệu từ "data"
         final List<dynamic> data = response["data"];
-        // Chuyển đổi từng phần tử thành đối tượng Category
         final List<Category> fetchedCategories =
-            data.map((json) => Category.fromJson(json)).toList();
+        data.map((json) => Category.fromJson(json)).toList();
 
         setState(() {
           categories = fetchedCategories; // Gán danh sách danh mục đầy đủ
@@ -81,7 +79,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
   // Hiển thị thông báo
   Future<void> showNotification() async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
+    AndroidNotificationDetails(
       'your_channel_id',
       'your_channel_name',
       channelDescription: 'your_channel_description',
@@ -90,7 +88,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
       showWhen: false,
     );
     const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+    NotificationDetails(android: androidPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
       0,
       'Sản phẩm mới!',
@@ -101,80 +99,76 @@ class _ProductPageState extends ConsumerState<ProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedCategory = ref.watch(
-        productCategoryProvider); // Lấy selectedCategory từ ProductCategoryNotifier
-    final currentPage = ref
-        .watch(productPageProvider); // Lấy currentPage từ ProductPageNotifier
-    final productData = ref
-        .watch(productNotifierProvider); // Dữ liệu sản phẩm từ ProductNotifier
+    final selectedCategory = ref.watch(productCategoryProvider);
+    final currentPage = ref.watch(productPageProvider);
+    // Lấy dữ liệu tất cả sản phẩm từ state ProductNotifier
+    final productState = ref.watch(productNotifierProvider);
 
     return Scaffold(
       backgroundColor: AppColors.primaryBg,
       body: SingleChildScrollView(
         child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 25.w),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    text28Bold(text: "Khám Phá", color: AppColors.secondary),
-                    IconButton(
-                      icon: Icon(
-                        Icons.notifications,
-                        color: AppColors.secondary,
-                        size: 24.sp,
-                      ),
-                      onPressed:
-                          showNotification, // Nhấn vào biểu tượng thông báo
+          child: productState.when(
+            data: (allProducts) {
+              // Dựa vào allProducts (đã load sẵn), ta phân trang và filter trên FE.
+              // Khi thay đổi category hoặc currentPage, widget rebuild.
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 25.w),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        text28Bold(text: "Khám Phá", color: AppColors.secondary),
+                        IconButton(
+                          icon: Icon(
+                            Icons.notifications,
+                            color: AppColors.secondary,
+                            size: 24.sp,
+                          ),
+                          onPressed: showNotification,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              searchBar(context, ref, _searchController),
-              if (isLoadingCategories)
-                const Center(
-                  child: CircularProgressIndicator(),
-                )
-              else
-                categoryFilter(
-                  categories: categories.map((c) => c.name).toList(),
-                  selectedCategory: selectedCategory,
-                  onCategorySelected: (category) {
-                    ref
-                        .read(productCategoryProvider.notifier)
-                        .updateCategory(category); // Cập nhật danh mục
-                    ref
-                        .read(productPageProvider.notifier)
-                        .setPage(0); // Reset lại trang
-                    ref
-                        .read(productNotifierProvider.notifier)
-                        .fetchProductsForPage(0); // Tải lại trang đầu tiên
-                  },
-                ),
-              SizedBox(height: 10.h),
-              Padding(
-                padding: EdgeInsets.only(left: 16.w),
-                child: text24Normal(text: selectedCategory),
-              ),
-              productList(
-                currentPage: currentPage,
-                selectedCategory: selectedCategory,
-                onPageChange: (newPage) {
-                  ref
-                      .read(productPageProvider.notifier)
-                      .setPage(newPage); // Cập nhật trang mới
-                  ref
-                      .read(productNotifierProvider.notifier)
-                      .fetchProductsForPage(
-                          newPage); // Gọi API lấy sản phẩm mới
-                },
-                ref: ref, // Truyền WidgetRef
-              ),
-              SizedBox(height: 20.h),
-            ],
+                  ),
+                  searchBar(context, ref, _searchController),
+                  if (isLoadingCategories)
+                    const Center(child: CircularProgressIndicator())
+                  else
+                    categoryFilter(
+                      categories: categories.map((c) => c.name).toList(),
+                      selectedCategory: selectedCategory,
+                      onCategorySelected: (category) {
+                        // Cập nhật category và reset trang về 0
+                        ref.read(productCategoryProvider.notifier).updateCategory(category);
+                        ref.read(productPageProvider.notifier).setPage(0);
+                        // Không gọi fetchProductsForPage nữa
+                        // Vì ta đã có allProducts ở FE
+                      },
+                    ),
+                  SizedBox(height: 10.h),
+                  Padding(
+                    padding: EdgeInsets.only(left: 16.w),
+                    child: text24Normal(text: selectedCategory),
+                  ),
+                  productList(
+                    currentPage: currentPage,
+                    selectedCategory: selectedCategory,
+                    onPageChange: (newPage) {
+                      ref.read(productPageProvider.notifier).setPage(newPage);
+                      // Không gọi fetchProductsForPage nữa, vì phân trang FE
+                    },
+                    ref: ref,
+                  ),
+                  SizedBox(height: 20.h),
+                ],
+              );
+            },
+            loading: () => const Center(
+              child: CircularProgressIndicator(),
+            ),
+            error: (error, _) => Center(child: Text('Error: $error')),
           ),
         ),
       ),

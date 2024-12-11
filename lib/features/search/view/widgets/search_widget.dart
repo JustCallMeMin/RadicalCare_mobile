@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../common/model/vehicle.dart';
 import '../../../../common/widgets/app_textfieds.dart';
 import '../../../filtered_product/view/widgets/filtered_product_widget.dart';
+import '../../../product/view/widgets/product_widgets.dart';
 
 Widget searchBarOnSearchPage({
   required BuildContext context,
@@ -43,6 +44,40 @@ Widget searchBarOnSearchPage({
         ),
       ],
     ),
+  );
+}
+Widget searchResultsGrid(AsyncValue<List<Vehicle>> products) {
+  return products.when(
+    data: (vehicles) {
+      // Kiểm tra xem có dữ liệu hay không
+      if (vehicles.isEmpty) {
+        return const Center(
+          child: Text("Không tìm thấy kết quả nào!"),
+        );
+      }
+
+      // Nếu có dữ liệu, hiển thị GridView
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: GridView.builder(
+          physics: const BouncingScrollPhysics(),
+          shrinkWrap: true,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 16.0,
+            crossAxisSpacing: 16.0,
+            childAspectRatio: 0.68,
+          ),
+          itemCount: vehicles.length,
+          itemBuilder: (context, index) {
+            var product = vehicles[index];
+            return productItem(context: context, product: product);
+          },
+        ),
+      );
+    },
+    loading: () => const Center(child: CircularProgressIndicator()),
+    error: (error, stackTrace) => Center(child: Text('Error: $error')),
   );
 }
 

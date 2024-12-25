@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../model/cost_table.dart';
-import '../model/vehicle.dart';
+import '../model/cost_table_model.dart';
+import '../model/vehicle_model.dart';
 import 'api_config.dart';
 
 // Secure Storage for token

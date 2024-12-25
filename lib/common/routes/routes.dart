@@ -4,19 +4,20 @@ import 'package:radicalcare/features/auth/forgot_password/view/forgot_pasword.da
 import 'package:radicalcare/features/auth/reset_password/view/reset_password.dart';
 
 import '../../features/application/view/application.dart';
-import '../../features/appointment_detail/appointment_detail.dart';
-import '../../features/appointment_list/view/appointment_list.dart';
+import '../../features/appointment/appointment_detail/appointment_detail.dart';
+import '../../features/appointment/appointment_list/view/appointment_list.dart';
 import '../../features/auth/sign_in/view/sign_in.dart';
 import '../../features/auth/sign_up/view/sign_up.dart';
 import '../../features/auth/update_profile/view/update_profile.dart';
-import '../../features/filter/view/filter.dart';
+import '../../features/cart/view/cart.dart';
+import '../../features/product/filter/view/filter.dart';
 import '../../features/home/booking/view/booking.dart';
 import '../../features/home/home_page/view/home.dart';
-import '../../features/home/profile/view/profile.dart';
-import '../../features/product_detail/view/product_detail.dart';
+import '../../features/product/product_detail/view/product_detail.dart';
+import '../../features/profile/view/profile.dart';
 import '../../features/welcome/welcome.dart';
-import '../model/appointment.dart';
-import '../model/vehicle.dart';
+import '../model/appointment_model.dart';
+import '../model/vehicle_model.dart';
 import 'app_routes_name.dart';
 
 class AppPages {
@@ -73,6 +74,10 @@ class AppPages {
       RouteEntity(
         path: AppRoutesNames.APPOINTMENT_DETAILS,
         page: const Placeholder(), // Thay Placeholder bằng trang chi tiết phiếu
+      ),
+      RouteEntity(
+        path: AppRoutesNames.CART,
+        page: CartPage(), // Thêm trang Cart
       ),
     ];
   }
@@ -155,6 +160,11 @@ class AppPages {
         final appointment = settings.arguments as Appointment;
         return MaterialPageRoute(
           builder: (_) => AppointmentDetailsPage(appointment: appointment),
+          settings: settings,
+        );
+      case AppRoutesNames.CART:
+        return MaterialPageRoute(
+          builder: (_) => CartPage(),
           settings: settings,
         );
       default:

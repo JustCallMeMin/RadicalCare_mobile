@@ -1,5 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:radicalcare/common/model/vehicle.dart';
+import 'package:radicalcare/common/model/vehicle_model.dart';
 import '../../../common/api/search_api.dart';
 import '../../../common/utils/secure_storage.dart';
 import '../../../common/utils/token_utils.dart';

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../model/vehicle.dart';
+import '../model/vehicle_model.dart';
 import 'api_config.dart';
 
 /// Hàm để lấy danh mục

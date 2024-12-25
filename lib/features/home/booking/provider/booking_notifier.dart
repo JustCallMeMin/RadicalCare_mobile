@@ -1,5 +1,5 @@
-import 'package:radicalcare/common/model/booking.dart';
-import 'package:radicalcare/common/model/booking_detail.dart';
+import 'package:radicalcare/common/model/booking_model.dart';
+import 'package:radicalcare/common/model/booking_detail_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:radicalcare/common/api/appointment_api.dart';
 import '../../../../common/api/motor_service_api.dart';

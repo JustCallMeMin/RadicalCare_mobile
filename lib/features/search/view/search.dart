@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:radicalcare/features/search/view/search_result.dart';
 import 'package:radicalcare/features/search/view/widgets/search_widget.dart';
-import '../../../common/model/vehicle.dart';
+import '../../../common/model/vehicle_model.dart';
 import '../../../common/utils/colors.dart';
 import '../../../common/utils/secure_storage.dart';
 import '../../../common/widgets/text_widgets.dart';
 import '../../../common/api/search_api.dart';
 import '../../../common/utils/token_utils.dart';
-import '../../product_detail/view/product_detail.dart';
+import '../../product/product_detail/view/product_detail.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({super.key, required this.keyword});

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:radicalcare/common/model/vehicle.dart';
-import 'package:radicalcare/features/product/view/widgets/product_widgets.dart';
+import 'package:radicalcare/common/model/vehicle_model.dart';
 import 'package:radicalcare/features/search/view/widgets/search_widget.dart';
-import '../../product/provider/product_notifier.dart';
 import '../provider/search_notifier.dart';
 
 class SearchResultsPage extends ConsumerWidget {

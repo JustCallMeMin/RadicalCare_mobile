@@ -20,10 +20,10 @@ class _HomePageState extends ConsumerState<HomePage> {
   void initState() {
     super.initState();
     print("[HomePage] Initializing HomePage");
-    ref.read(homePageIndexProvider.notifier).fetchUserFullNameAndGps().then((_) {
-      print("[HomePage] Completed fetchUserFullNameAndGps");
-    }).catchError((error) {
-      print("[HomePage] Error during fetchUserFullNameAndGps: $error");
+
+    // Tải dữ liệu lần đầu
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(homePageIndexProvider.notifier).loadInitialData();
     });
   }
 
@@ -49,8 +49,8 @@ class _HomePageState extends ConsumerState<HomePage> {
               child: headerSection(
                 context,
                 imagePath: AppImages.homeBanner,
-                fullName: fullName,
-                location: location,
+                fullName: fullName ?? "Đang tải...",
+                location: location ?? "Đang tải...",
               ),
             ),
             Column(
@@ -88,6 +88,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
                 SizedBox(height: 10.h),
                 servicePageView(context, ref),
+                SizedBox(height: 80.h)
               ],
             ),
           ],

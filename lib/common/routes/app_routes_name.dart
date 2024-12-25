@@ -15,4 +15,6 @@ class AppRoutesNames {
   static const UPDATE_PROFILE = '/update-profile';
   static const APPOINTMENT_LIST = '/appointment-list';
   static const APPOINTMENT_DETAILS = '/appointment-details';
+  static const CART = '/cart';
+
 }

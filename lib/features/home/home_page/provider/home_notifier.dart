@@ -11,48 +11,63 @@ part 'home_notifier.g.dart';
 class HomePageIndex extends _$HomePageIndex {
   @override
   int build() {
-    return 0;
+    return 0; // State ban đầu
   }
 
-  String? fullName;
-  String? location;
+  String? fullName; // Tên người dùng
+  String? location; // Địa chỉ GPS
+  DateTime? lastFetchTime; // Thời gian fetch GPS gần nhất
+  String? cachedFullName; // Cache tên người dùng
+  String? cachedLocation; // Cache vị trí GPS
 
-  Future<String> getAddressFromLatLng(double latitude, double longitude) async {
+  static const gpsCacheDuration = Duration(minutes: 5);
+
+  /// Tải tên người dùng (chỉ một lần)
+  Future<void> loadUserNameOnce() async {
+    if (cachedFullName != null) {
+      fullName = cachedFullName;
+      print("[HomePageIndex] Tên người dùng đã có trong cache: $fullName");
+      return; // Không fetch lại
+    }
+
     try {
-      print("[HomePageIndex] Converting coordinates to address: lat=$latitude, lng=$longitude");
-      List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
-      if (placemarks.isNotEmpty) {
-        Placemark place = placemarks[0];
-        return "${place.street}, ${place.locality}, ${place.country}";
-      }
-      return "Không tìm thấy địa chỉ";
+      print("[HomePageIndex] Fetching user name...");
+      final userInfo = await fetchUserInfo();
+      fullName = userInfo.fullName;
+      cachedFullName = fullName; // Cache tên người dùng
+      print("[HomePageIndex] User name loaded: $fullName");
     } catch (e) {
-      print("[HomePageIndex] Error converting coordinates: $e");
-      return "Lỗi khi lấy địa chỉ";
+      print("[HomePageIndex] Lỗi khi tải tên người dùng: $e");
+      fullName = "Không thể tải tên người dùng";
     }
   }
 
-  Future<void> fetchUserFullNameAndGps() async {
+  Future<void> loadGpsLocation({bool forceRefresh = false}) async {
+    final now = DateTime.now();
+
+    if (!forceRefresh &&
+        cachedLocation != null &&
+        lastFetchTime != null &&
+        now.difference(lastFetchTime!) < gpsCacheDuration) {
+      print("[HomePageIndex] Sử dụng cache GPS: $cachedLocation");
+      location = cachedLocation;
+      state = state + 1; // Cập nhật UI
+      return;
+    }
+
+    // Load vị trí GPS mới
     try {
-      print("[HomePageIndex] Fetching user info and GPS data");
-
-      // Lấy User ID và Customer ID
+      print("[HomePageIndex] Fetching GPS location...");
       final userId = await SecureStorageManager.getUserId();
-      final customerId = await SecureStorageManager.getCustomerId();
+      if (userId == null) throw Exception("Không tìm thấy ID người dùng.");
 
-      if (userId == null) throw Exception("User ID not found.");
-
-      // Lấy tọa độ GPS từ thiết bị
       final deviceLocation = await LocationService.getCurrentLocation();
-      if (deviceLocation == null) {
-        throw Exception("Unable to fetch device GPS location.");
-      }
+      if (deviceLocation == null) throw Exception("Không thể lấy GPS.");
+
       final latitude = deviceLocation.latitude;
       final longitude = deviceLocation.longitude;
 
-      print("[HomePageIndex] Device GPS: lat=$latitude, lng=$longitude");
-
-      // Gửi tọa độ lên BE
+      // Gửi tọa độ lên server
       await GpsApi.saveGpsLocation(
         latitude: latitude.toString(),
         longitude: longitude.toString(),
@@ -60,38 +75,52 @@ class HomePageIndex extends _$HomePageIndex {
         userId: userId,
       );
 
-      print("[HomePageIndex] Posted GPS data to server");
-
-      // Fetch tọa độ từ BE
+      // Fetch từ server
       final gpsDataFromBe = await fetchGpsDataFromBe(userId);
-      if (gpsDataFromBe == null) {
-        throw Exception("Failed to fetch GPS data from server.");
-      }
-
       final latitudeFromBe = gpsDataFromBe['latitude'];
       final longitudeFromBe = gpsDataFromBe['longitude'];
 
-      print("[HomePageIndex] GPS from server: lat=$latitudeFromBe, lng=$longitudeFromBe");
-
       // Chuyển tọa độ thành địa chỉ
-      final address = await getAddressFromLatLng(latitudeFromBe, longitudeFromBe);
-      location = address;
+      location = await getAddressFromLatLng(latitudeFromBe, longitudeFromBe);
 
-      print("[HomePageIndex] Resolved location from BE: $location");
+      // Cache kết quả
+      cachedLocation = location;
+      lastFetchTime = DateTime.now();
 
-      // Fetch thông tin người dùng
-      final userInfo = await fetchUserInfo();
-      fullName = userInfo.fullName;
-
-      print("[HomePageIndex] User full name fetched: $fullName");
-
-      // Cập nhật lại state để giao diện render lại
-      state = state + 1; // Chỉ cần thay đổi để trigger rebuild
+      print("[HomePageIndex] GPS location updated: $location");
     } catch (e) {
-      print("[HomePageIndex] Error fetching user info or GPS: $e");
+      print("[HomePageIndex] Lỗi khi tải vị trí GPS: $e");
+      location = "Không thể tải vị trí";
+    }
+
+    state = state + 1; // Trigger rebuild
+  }
+
+  /// Chuyển tọa độ thành địa chỉ
+  Future<String> getAddressFromLatLng(double latitude, double longitude) async {
+    try {
+      print("[HomePageIndex] Chuyển tọa độ thành địa chỉ...");
+      List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks[0];
+        return "${place.street}, ${place.locality}, ${place.country}";
+      }
+      return "Không tìm thấy địa chỉ";
+    } catch (e) {
+      print("[HomePageIndex] Lỗi khi chuyển tọa độ: $e");
+      return "Lỗi khi lấy địa chỉ";
     }
   }
 
+  /// Load toàn bộ dữ liệu lần đầu
+  Future<void> loadInitialData() async {
+    await Future.wait([
+      loadUserNameOnce(),
+      loadGpsLocation(),
+    ]);
+  }
+
+  /// Thay đổi index trang
   void changeIndex(int value) {
     state = value;
   }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../../../../common/model/vehicle.dart';
+import '../../../../common/model/vehicle_model.dart';
 import '../../../../common/utils/colors.dart';
 import '../../../../common/widgets/text_widgets.dart';
-import '../../../product/provider/product_notifier.dart';
+import '../../../product/product_page/provider/product_notifier.dart';
 
 Widget vehicleItemWidgetFavor({
   required Vehicle vehicle,

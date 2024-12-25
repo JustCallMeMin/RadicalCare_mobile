@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../common/model/vehicle.dart';
+import '../../../../common/model/vehicle_model.dart';
 import '../../../../common/widgets/app_textfieds.dart';
-import '../../../filtered_product/view/widgets/filtered_product_widget.dart';
-import '../../../product/view/widgets/product_widgets.dart';
+import '../../../product/filtered_product/view/widgets/filtered_product_widget.dart';
+import '../../../product/product_page/view/widgets/product_widgets.dart';
 
 Widget searchBarOnSearchPage({
   required BuildContext context,

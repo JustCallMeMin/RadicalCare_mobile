@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:radicalcare/common/model/vehicle.dart'; // Import model Vehicle
+import 'package:radicalcare/common/model/vehicle_model.dart'; // Import model Vehicle
 
 class SecureStorageManager {
   static const _storage = FlutterSecureStorage();
@@ -103,9 +103,15 @@ class SecureStorageManager {
   // Lấy userId từ token đã lưu
   static Future<String?> getUserId() async {
     final token = await getToken();
-    if (token == null) return null;
-    return _getClaimFromToken(token, 'userId');
+    if (token == null) {
+      print('SecureStorageManager: Token is null, cannot extract userId.');
+      return null;
+    }
+    final userId = _getClaimFromToken(token, 'userId');
+    if (userId == null) print('SecureStorageManager: Failed to extract userId.');
+    return userId;
   }
+
 
   // Lấy customerId từ token đã lưu
   static Future<String?> getCustomerId() async {

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:radicalcare/common/utils/colors.dart';
 import 'package:radicalcare/features/favorite/view/favorite.dart';
-import 'package:radicalcare/features/product/view/product.dart';
+import 'package:radicalcare/features/product/product_page/view/product.dart';
 
+import '../../../cart/view/cart.dart';
 import '../../../home/home_page/view/home.dart';
-import '../../../home/profile/view/profile.dart';
+import '../../../profile/view/profile.dart';
 
 Widget bottomNavigationWidget({
   required int currentIndex,
@@ -50,8 +51,8 @@ Widget bottomNavigationWidget({
             onTap: onTap
         ),
         _buildNavItem(
-            icon: Icons.chat_bubble_outline,
-            activeIcon: Icons.chat_bubble,
+            icon: Icons.shopping_cart_outlined,
+            activeIcon: Icons.shopping_cart,
             index: 3,
             currentIndex: currentIndex,
             onTap: onTap
@@ -105,7 +106,7 @@ Widget appScreens({int index = 0}) {
     const HomePage(),
     const ProductPage(),
     const FavoriteScreen(),
-    const Center(child: Text('Giỏ hàng')),
+    CartPage(),
     const ProfilePage()
   ];
 

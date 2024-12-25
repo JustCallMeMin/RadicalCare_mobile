@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:radicalcare/features/favorite/view/widgets/favorite_widget.dart';
 import '../../../common/utils/colors.dart';
-import '../../product/provider/product_notifier.dart';
-import '../../product_detail/view/product_detail.dart';
+import '../../product/product_detail/view/product_detail.dart';
+import '../../product/product_page/provider/product_notifier.dart';
 
 class FavoriteScreen extends ConsumerWidget {
   const FavoriteScreen({super.key});

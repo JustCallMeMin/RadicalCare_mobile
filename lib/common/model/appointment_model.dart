@@ -29,11 +29,14 @@ class Appointment {
     return Appointment(
       id: json['id'] as int,
       customerId: json['customerId'] as String? ?? '',
-      dateCreated: DateTime.parse(json['dateCreated'] as String),
+      dateCreated: DateTime(
+        json['dateCreated'][0], // Năm
+        json['dateCreated'][1], // Tháng
+        json['dateCreated'][2], // Ngày
+      ),
       status: json['status'] as String? ?? 'Pending',
       details: (json['details'] as List<dynamic>)
-          .map((detailJson) =>
-          AppointmentDetail.fromJson(detailJson as Map<String, dynamic>))
+          .map((detailJson) => AppointmentDetail.fromJson(detailJson as Map<String, dynamic>))
           .toList(),
     );
   }
@@ -43,7 +46,7 @@ class Appointment {
     return {
       'id': id,
       'customerId': customerId,
-      'dateCreated': dateCreated.toIso8601String(),
+      'dateCreated': [dateCreated.year, dateCreated.month, dateCreated.day], // Mảng ngày
       'status': status,
       'details': details.map((detail) => detail.toJson()).toList(),
       'totalCost': totalCost, // Tổng chi phí

@@ -15,6 +15,15 @@ import '../../../../search/view/search.dart';
 import '../../../booking/provider/booking_notifier.dart';
 import '../../provider/home_notifier.dart';
 
+final Map<String, String> serviceImageMap = {
+  "Bảo dưỡng định kỳ": AppImages.service1,
+  "Thay nhớt": AppImages.service2,
+  "Thay lốp": AppImages.service3,
+  "Sửa chữa động cơ": AppImages.service4,
+  "Kiểm tra hệ thống phanh": AppImages.service5,
+  "Rửa xe máy": AppImages.service6,
+};
+
 Widget headerSection(
     BuildContext context, {
       required String imagePath,
@@ -135,8 +144,8 @@ Widget topCategories(WidgetRef ref) {
                 itemBuilder: (context, index) {
                   final service = services[index];
                   return _categoryCard(
-                    imagePath: service['imagePath'] ?? AppImages.service1, // Đường dẫn hình ảnh
-                    categoryName: service['serviceName'], // Tên danh mục
+                    imagePath: serviceImageMap[service['serviceName']] ?? AppImages.service1,
+                    categoryName: service['serviceName'],
                   );
                 },
               );
@@ -204,16 +213,16 @@ Widget servicePageView(BuildContext context, WidgetRef ref) {
               },
               itemBuilder: (context, index) {
                 final service = services[index]; // Đây là Map<String, dynamic>
-
                 return _serviceCard(
-                  imagePath: AppImages.service1, // Hình ảnh mặc định
+                  imagePath: serviceImageMap[service['serviceName']] ?? AppImages.service1,
                   serviceName: service['serviceName'] ?? 'Unknown Service',
                   onTap: () {
+                    print("Service Name: ${service['serviceName']}, Image Path: ${serviceImageMap[service['serviceName']] ?? AppImages.service1}");
                     Navigator.of(context).pushNamed(
                       AppRoutesNames.BOOKING,
                       arguments: {
                         'serviceName': service['serviceName'],
-                        'cost': service['cost'] ?? 0.0,
+                        'cost': service['costTableId'] ?? 0.0,
                       },
                     );
                   },

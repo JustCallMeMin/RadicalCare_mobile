@@ -18,6 +18,9 @@ class AppImages {
   static const String service1 = "assets/images/Service1.png";
   static const String service2 = "assets/images/Service2.png";
   static const String service3 = "assets/images/Service3.png";
+  static const String service4 = "assets/images/service4.png";
+  static const String service5 = "assets/images/Service5.png";
+  static const String service6 = "assets/images/Service6.png";
   static const String homeBanner = "assets/images/Customer_Service_Banner.png";
   static const String teamWhoWeAre = "assets/images/WhoWeAre_Banner.png";
 

@@ -25,7 +25,11 @@ class AppointmentDetail {
       serviceId: json['serviceId'] ?? 0,
       serviceName: json['serviceName'] ?? 'Unknown Service',
       serviceDescription: json['serviceDescription'] ?? 'No Description',
-      serviceDate: DateTime.parse(json['serviceDate']),
+      serviceDate: DateTime(
+        json['serviceDate'][0], // Năm
+        json['serviceDate'][1], // Tháng
+        json['serviceDate'][2], // Ngày
+      ),
       serviceCost: (json['serviceCost'] ?? 0.0).toDouble(),
     );
   }
@@ -38,7 +42,7 @@ class AppointmentDetail {
       'serviceId': serviceId,
       'serviceName': serviceName,
       'serviceDescription': serviceDescription,
-      'serviceDate': serviceDate.toIso8601String(),
+      'serviceDate': [serviceDate.year, serviceDate.month, serviceDate.day], // Mảng ngày
       'serviceCost': serviceCost,
     };
   }
